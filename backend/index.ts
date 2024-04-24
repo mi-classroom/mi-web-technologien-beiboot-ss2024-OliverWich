@@ -1,15 +1,22 @@
 import { Elysia } from "elysia";
+import { swagger } from '@elysiajs/swagger'
 import {frontend} from "../frontend"
 import {backend} from "./routes"
 import {registerExitHandlers} from "./RuntimeHelpers"
 
-const app = new Elysia()
-    .use(frontend)
-    .use(backend)
-    .listen(3000);
+try {
+    const app = startServer()
+    console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
+} catch (e) {
+    console.log("Something went horribly wrong. Could not start Elysia", e)
+}
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+function startServer () {
+    return new Elysia()
+        .use(swagger())
+        .use(frontend)
+        .use(backend)
+        .listen(3000);
+}
 
 registerExitHandlers()
