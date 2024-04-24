@@ -2,6 +2,7 @@ import {Elysia, t} from "elysia"
 import data from "../package.json"
 import {UploadService} from "./services/UploadService"
 import {getAllProjects} from "./Projects"
+import {ProjectService} from "./services/ProjectService"
 
 /**
  * The routes of the backend.
@@ -19,6 +20,14 @@ export const backend = new Elysia()
             })
         }
     )
+    .post('/process', ({body, set}) => {
+        return ProjectService.process(body.project, body.options, set)
+    }, {
+        body: t.Object({
+            project: t.String(),
+            options: t.Optional(t.Object({})),
+        })
+    })
 
 function getStatusMessage() {
     return {
