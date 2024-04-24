@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "bun --filter '*' dev",
+    "serve": "bun --bun --filter '*' dev",
     "dev": "bun run --watch backend/index.ts",
     "frontend:build": "vite build frontend",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
+  "module": "backend/index.ts",
   "dependencies": {
     "@elysiajs/static": "^1.0.3",
     "elysia": "latest",
@@ -31,6 +32,5 @@
     "vite": "^5.2.8",
     "vite-plugin-vue-devtools": "^7.0.25",
     "vue-tsc": "^2.0.11"
-  },
-  "module": "backend/index.js"
+  }
 }
