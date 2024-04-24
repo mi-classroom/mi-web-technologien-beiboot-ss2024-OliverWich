@@ -10,7 +10,7 @@ export async function getProjectForFileName(fileName: string): Promise<Project> 
 }
 
 export async function getAllProjects() {
-    return await readdir(projectsPath)
+    return (await readdir(projectsPath)).filter((file) => file !== '.gitkeep')
 }
 
 function getFileNameWithoutExtension(fileName: string) {

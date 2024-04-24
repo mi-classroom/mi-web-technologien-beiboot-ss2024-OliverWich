@@ -8,7 +8,7 @@ import {getAllProjects} from "./Projects"
  */
 export const backend = new Elysia()
     .get('/status', getStatusMessage)
-    .get('/allFiles', () => {
+    .get('/projects', () => {
         return getAllProjects()
     })
     .post('/upload', ({body, set}) => {
