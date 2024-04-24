@@ -5,10 +5,10 @@ import { staticPlugin } from '@elysiajs/static'
 const app = new Elysia()
     .onError(({ code, path, set }) => {
         if (code === 'NOT_FOUND')
-            return Bun.file('./src/frontend/dist/index.html')
+            return Bun.file('./frontend/dist/index.html')
     })
     .use(staticPlugin({
-        assets: './src/frontend/dist/',
+        assets: './frontend/dist/',
         prefix: '/',
     }))
     .get('/test', () => 'test')
@@ -17,3 +17,13 @@ const app = new Elysia()
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
+
+process.on("SIGINT", () => {
+    console.log("Received SIGINT, dying");
+    process.exit()
+});
+
+process.on("SIGTERM", () => {
+    console.log("Received SIGTERM, dying");
+    process.exit()
+});
