@@ -53,6 +53,8 @@ export abstract class ProjectService {
 
         const frames = await project.getFrames(options.fps)
 
+        console.info(`Exposing ${frames.length} frames from ${project.name} which corresponds to ${options.fps} fps with mode ${options.mode}`)
+
         async function getOutFileBuffer () {
             switch (options.mode) {
                 case 'mean': return manualMeanCalculation()
