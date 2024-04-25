@@ -27,6 +27,7 @@ class Project {
     framePath: string
     outPath: string
     sourceFile: BunFile
+    // TODO: store this in a config file per project
     fps: number = 30
 
     private constructor(name: string, path: string, sourceFile: BunFile) {
@@ -65,17 +66,16 @@ class Project {
     }
 
     /**
-     *
-     * @param fps Will later be used to specify how many fps equivalent to get
+     * @param fps How many frames per second equivalent to return
      */
     async getFrames (fps: number = this.fps): Promise<Array<BunFile>> {
         const frameNames = await readdir(this.framePath)
         const frameFiles: Array<BunFile> = []
 
-        for (const frameIndex in frameNames) {
-            if (frameIndex as any as number % fps === 0) {
-                frameFiles.push(Bun.file(`${this.framePath}/${frameNames[frameIndex]}`))
-            }
+        const frameInterval = Math.floor(this.fps / fps)
+
+        for (let frameIndex = 0; frameIndex < frameNames.length; frameIndex += frameInterval) {
+            frameFiles.push(Bun.file(`${this.framePath}/${frameNames[frameIndex]}`))
         }
 
         return frameFiles
