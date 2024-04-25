@@ -67,14 +67,26 @@ class Project {
 
     /**
      * @param fps How many frames per second equivalent to return
+     * @param start
+     * @param end
      */
-    async getFrames (fps: number = this.fps): Promise<Array<BunFile>> {
+    async getFrames (fps: number = this.fps, start: number = 0, end: number = -1): Promise<Array<BunFile>> {
         const frameNames = await readdir(this.framePath)
         const frameFiles: Array<BunFile> = []
 
         const frameInterval = Math.floor(this.fps / fps)
 
-        for (let frameIndex = 0; frameIndex < frameNames.length; frameIndex += frameInterval) {
+        const startIndex = start * this.fps
+        if (startIndex < 0 || startIndex > frameNames.length) {
+            throw new Error(`Start ${start} not valid! Must be 0 < start > ${frameNames.length / this.fps}`)
+        }
+
+        const endIndex = end === -1 ? frameNames.length : end * this.fps
+        if (endIndex < 0 || endIndex > frameNames.length || endIndex < startIndex) {
+            throw new Error(`End ${end} not valid! Must be start < end > ${frameNames.length / this.fps}`)
+        }
+
+        for (let frameIndex = startIndex; frameIndex < endIndex; frameIndex += frameInterval) {
             frameFiles.push(Bun.file(`${this.framePath}/${frameNames[frameIndex]}`))
         }
 

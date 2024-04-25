@@ -47,15 +47,27 @@ export const backend = new Elysia()
         }
     })
     .post('/expose', ({body, set}) => {
+        body.options.fps = body.options.fps || 30
+        body.options.start = body.options.start || 0
+        body.options.end = body.options.end || -1
+
         return ProjectService.expose(body.project, body.options, set)
     }, {
         body: t.Object({
             project: t.String(),
             options: t.Object({
                 mode: t.String({
-                    default: 'overlay',
-                    fps: 30
-                })
+                    default: 'mean',
+                }),
+                fps: t.Optional(t.Number({
+                    default: 30
+                })),
+                start: t.Optional(t.Number({
+                    default: 0
+                })),
+                end: t.Optional(t.Number({
+                    default: -1
+                }))
             }),
         }),
         response: {

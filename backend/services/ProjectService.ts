@@ -48,12 +48,12 @@ export abstract class ProjectService {
         return await runFfmpeg()
     }
 
-    static async expose (projectName: string, options: any, response: Context["set"]) {
+    static async expose (projectName: string, options: any, _response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
-        const frames = await project.getFrames(options.fps)
+        const frames = await project.getFrames(options.fps, options.start, options.end)
 
-        console.info(`Exposing ${frames.length} frames from ${project.name} which corresponds to ${options.fps} fps with mode ${options.mode}`)
+        console.info(`Exposing ${frames.length} frames from ${project.name} which corresponds to ${options.fps}fps with mode "${options.mode}" starting at second ${options.start} and ending at ${options.end === -1 ? 'the end' : options.end + ' seconds'}`)
 
         async function getOutFileBuffer () {
             switch (options.mode) {
