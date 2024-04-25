@@ -13,7 +13,13 @@ try {
 
 function startServer () {
     return new Elysia()
-        .use(swagger())
+        .use(swagger({
+            documentation: {
+                info: {
+                    title: "Still Moving documentation"
+                }
+            }
+        }))
         .use(frontend)
         .use(backend)
         .listen(3000);
