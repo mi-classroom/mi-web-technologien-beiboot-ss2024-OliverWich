@@ -15,7 +15,7 @@ export abstract class ProjectService {
         const project = await getProjectForName(projectName)
 
         // TODO: handle case where the file is already processed. In this case abort with 409 and only go through if user specified the `force` option
-        async function createDirIfNotExists (dir) {
+        async function createDirIfNotExists (dir: string) {
             return access(dir)
                 .then(() => undefined)
                 .catch(() => mkdir(dir));
@@ -23,7 +23,7 @@ export abstract class ProjectService {
 
         await createDirIfNotExists(`${project.path}/frames`)
 
-        async function runFfmpeg () {
+        async function runFfmpeg (): Promise<void> {
             return new Promise((resolve, reject) => {
                 try {
                     console.info(`Starting to extract frames from ${project.sourceFile.name}`)
