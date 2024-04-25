@@ -21,6 +21,7 @@ COPY package.json  .
 
 COPY --from=build /app/backend backend
 COPY --from=build /app/frontend/dist frontend/dist
+COPY --from=build /app/frontend/index.ts frontend/index.ts
 
 RUN bun install --production
 
