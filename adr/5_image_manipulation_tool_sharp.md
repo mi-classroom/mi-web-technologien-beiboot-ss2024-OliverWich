@@ -1,33 +1,33 @@
-# Frontend - Vue 3
+# Image manipulation tool - sharp
 
 ## Status
 
-TBD
+Accepted
 
 ## Context
+There are many ways to edit images programmatically.
+Since we want to blend images together, a tool is needed that can do that.
 
+I want this to run as hands off as possible without the need to install any tools separately.
+This means, that only tools that come as fully self-contained packages come into question.
 
+A few examples are:
 * [Magickwand.js](https://github.com/mmomtchev/magickwand.js)
 * [Sharp](https://sharp.pixelplumbing.com/)
 
 
 ## Decision
+After trying out Magickwand.js (which is a Node port of Magick++ wich itself is a Cpp library for ImageMagick) and not 
+getting it to run successfully, I've settled on **sharp**.
+This hat the ability to work with raw pixels, comes with a build in composite feature and feels in general easy to work with.
 
-This decision was rather easy since I have most experience with Vue, it was chosen.
-
-This also implies the usage of [vite](https://vitejs.dev/) as this is the default bundler Vue 3 uses.
-
-Due to trying out something new on the backend, I decided to play it safe for the frontend.
 
 ## Consequences
 
 Pros:
-* Lots of personal experience
-* Nice component system
-* Easy reactivity
-* Tons of community made libraries and plugins
+* A tool that works without any extra dependencies
+* A nice API
+* A robust set of features to build upon.
 
 Cons:
-* A lot of learning material around Elysia and so on is written in react
-* None (arguably the best framework, come at me react fans)
-  * As framework choice is mostly personal preference
+* The need to build some features by hand as only basic image manipulation stuff is build in.
