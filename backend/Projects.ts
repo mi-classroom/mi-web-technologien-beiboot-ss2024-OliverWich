@@ -48,7 +48,7 @@ class Project {
         return new Project(
             name,
             path,
-            await getSourceFile(name, path, sourceFileName)
+            await getSourceFile()
         )
     }
 
@@ -57,6 +57,5 @@ class Project {
 
         await Bun.write(filePath, await file.arrayBuffer())
         this.sourceFile = Bun.file(filePath)
-        this.initialized = true
     }
 }
