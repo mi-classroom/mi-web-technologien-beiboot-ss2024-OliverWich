@@ -5,6 +5,7 @@ import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
 import ffmpeg from "fluent-ffmpeg"
 import {access, mkdir} from "node:fs/promises"
+import sharp from "sharp"
 
 ffmpeg.setFfmpegPath(ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath) // Might use this to gather infos about the file
@@ -30,8 +31,8 @@ export abstract class ProjectService {
 
                     ffmpeg(project.sourceFile.name)
                         .outputOptions('-vf','scale=-2:720')
-                        .fps(30)
-                        .saveToFile(`${project.path}/frames/%3d.png`)
+                        .fps(project.fps)
+                        .saveToFile(`${project.framePath}/%3d.png`)
                         .on('end', function() {
                             console.info(`Finished processing file ${project.sourceFile.name}`);
                             response.status = 204
@@ -44,7 +45,71 @@ export abstract class ProjectService {
             })
         }
 
-        return await runFfmpeg(project)
+        return await runFfmpeg()
+    }
+
+    static async expose (projectName: string, options: any, response: Context["set"]) {
+        const project = await getProjectForName(projectName)
+
+        const frames = await project.getFrames(options.fps)
+
+        async function getOutFileBuffer () {
+            switch (options.mode) {
+                case 'mean': return manualMeanCalculation()
+                default: return useSharpCompositing()
+            }
+        }
+
+        async function useSharpCompositing() {
+            const sharpInputFrames = frames.map(frame => {
+                return {
+                    input: frame.name,
+                    blend: options.mode
+                }
+            })
+
+            return await sharp(sharpInputFrames.pop()?.input)
+                .composite(sharpInputFrames)
+                .toBuffer()
+        }
+
+        async function manualMeanCalculation (): Promise<Buffer> {
+            const firstImage = sharp(frames[0].name)
+            const { width, height } = await firstImage.metadata()
+
+            if (!width || !height) {
+                throw new Error("Could not read metaData for Frames. Did you process the project first?")
+            }
+
+            // Initialize array to store pixel values for 3 channels
+            const pixelValues = Array(height * width * 3).fill(0)
+
+            // Extract pixel values from each image
+            for (let i = 0; i < frames.length; i++) {
+                const image = sharp(frames[i].name);
+                const pixels = await image.removeAlpha().raw().toBuffer();
+
+                for (let j = 0; j < pixels.length; j++) {
+                    pixelValues[j] += pixels[j]
+                }
+            }
+
+            // Calculate mean pixel values
+            const meanPixelValues = pixelValues.map(value => Math.floor(value / frames.length))
+
+            return sharp(Buffer.from(meanPixelValues), {
+                raw: {
+                    width: width,
+                    height: height,
+                    channels: 3,
+                }
+            })
+                .toFormat('png')
+                .toBuffer()
+        }
+
+        const outPath = `${project.outPath}/out.png`
+        await Bun.write(outPath, await getOutFileBuffer())
+        return Bun.file(outPath)
     }
 }
-

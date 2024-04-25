@@ -24,11 +24,16 @@ function getFileNameWithoutExtension(fileName: string) {
 class Project {
     name: string
     path: string
+    framePath: string
+    outPath: string
     sourceFile: BunFile
+    fps: number = 30
 
     private constructor(name: string, path: string, sourceFile: BunFile) {
         this.name = name
         this.path = path
+        this.framePath = `${this.path}/frames`
+        this.outPath = `${this.path}/out`
         this.sourceFile = sourceFile
     }
 
@@ -57,5 +62,22 @@ class Project {
 
         await Bun.write(filePath, await file.arrayBuffer())
         this.sourceFile = Bun.file(filePath)
+    }
+
+    /**
+     *
+     * @param fps Will later be used to specify how many fps equivalent to get
+     */
+    async getFrames (fps: number = this.fps): Promise<Array<BunFile>> {
+        const frameNames = await readdir(this.framePath)
+        const frameFiles: Array<BunFile> = []
+
+        for (const frameIndex in frameNames) {
+            if (frameIndex as any as number % fps === 0) {
+                frameFiles.push(Bun.file(`${this.framePath}/${frameNames[frameIndex]}`))
+            }
+        }
+
+        return frameFiles
     }
 }

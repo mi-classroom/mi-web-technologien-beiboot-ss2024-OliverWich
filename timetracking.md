@@ -1,0 +1,12 @@
+# Timetracking
+
+## Issue 1: Basics
+
+| Stunden | Beschreibung                                                                                              |
+|---------|-----------------------------------------------------------------------------------------------------------|
+| 4h      | Setup und experimentieren mit Elysia um herauszufinden was der beste Weg ist eine Vue Anwendung zu serven |
+| 2h      | Struktur entwerfen, verfeinern und hoffentlich bereit machen für zukünftige Issues                        |
+| 1h      | Implementierung von Upload und splitting                                                                  |
+| 1h      | Versuch magickwand.js and laufen zu bekommen. Wechsel auf sharp                                           |
+| 1h      | Implementierung via sharp composite. Leider keinen mode gefunden der den erwünschten Effekt bringt        |
+| 2h      | Implementierung eines manuellen "mean" blend mode weil sharp das nicht nativ kann                         |

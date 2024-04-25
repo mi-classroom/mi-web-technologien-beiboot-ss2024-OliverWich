@@ -26,7 +26,26 @@ export const backend = new Elysia()
         body: t.Object({
             project: t.String(),
             options: t.Optional(t.Object({})),
-        })
+        }),
+        response: {
+            200: t.String()
+        }
+    })
+    .post('/expose', ({body, set}) => {
+        return ProjectService.expose(body.project, body.options, set)
+    }, {
+        body: t.Object({
+            project: t.String(),
+            options: t.Object({
+                mode: t.String({
+                    default: 'overlay',
+                    fps: 30
+                })
+            }),
+        }),
+        response: {
+            200: t.File()
+        }
     })
 
 function getStatusMessage() {
