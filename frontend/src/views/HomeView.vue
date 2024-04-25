@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <iframe style="height: 80vh; width: 100%" src="/swagger"/>
   </main>
 </template>
