@@ -12,23 +12,18 @@ export const backend = new Elysia()
     .get('/projects', () => {
         return getAllProjects()
     }, {
-        200: t.Array(
-            t.Object({})
-        )
+        response: {
+            200: t.Array(
+                t.Object({})
+            )
+        }
     })
     .post('/upload', ({body, set}) => {
             return UploadService.handleFileUpload(body.file, set)
         }, {
             body: t.Object({
                 file: t.File()
-            }),
-            response: {
-                201: t.Null(),
-                500: t.String(),
-                422: t.Object({
-                    type: t.String({default: "validation"})
-                })
-            }
+            })
         }
     )
     .post('/process', ({body, set}) => {
@@ -38,13 +33,6 @@ export const backend = new Elysia()
             project: t.String(),
             options: t.Optional(t.Object({})),
         }),
-        response: {
-            204: t.Null(),
-            500: t.String(),
-            422: t.Object({
-                type: t.String({default: "validation"})
-            })
-        }
     })
     .post('/expose', ({body, set}) => {
         body.options.fps = body.options.fps || 30
@@ -69,14 +57,7 @@ export const backend = new Elysia()
                     default: -1
                 }))
             }),
-        }),
-        response: {
-            200: t.File(),
-            500: t.String(),
-            422: t.Object({
-                type: t.String({default: "validation"})
-            })
-        }
+        })
     })
 
 function getStatusMessage() {
