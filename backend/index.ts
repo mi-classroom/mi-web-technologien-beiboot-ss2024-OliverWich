@@ -3,6 +3,7 @@ import { swagger } from '@elysiajs/swagger'
 import {frontend} from "../frontend"
 import {backend} from "./routes"
 import {registerExitHandlers} from "./RuntimeHelpers"
+import data from "../package.json"
 
 try {
     const app = startServer()
@@ -16,7 +17,8 @@ function startServer () {
         .use(swagger({
             documentation: {
                 info: {
-                    title: "Still Moving documentation"
+                    title: "Still Moving documentation",
+                    version: data.version,
                 }
             }
         }))
