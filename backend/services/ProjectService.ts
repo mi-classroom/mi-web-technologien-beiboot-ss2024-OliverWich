@@ -7,7 +7,7 @@ import ffmpeg from "fluent-ffmpeg"
 import {access, mkdir} from "node:fs/promises"
 import sharp from "sharp"
 
-ffmpeg.setFfmpegPath(ffmpegPath)
+ffmpeg.setFfmpegPath(<string>ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath) // Might use this to gather infos about the file
 
 
