@@ -19,7 +19,7 @@ export abstract class ProjectService {
         async function createDirIfNotExists (dir: string) {
             return access(dir)
                 .then(() => undefined)
-                .catch(() => mkdir(dir));
+                .catch(() => mkdir(dir))
         }
 
         await createDirIfNotExists(`${project.path}/frames`)
@@ -34,7 +34,7 @@ export abstract class ProjectService {
                         .fps(project.fps)
                         .saveToFile(`${project.framePath}/%3d.png`)
                         .on('end', function() {
-                            console.info(`Finished processing file ${project.sourceFile.name}`);
+                            console.info(`Finished processing file ${project.sourceFile.name}`)
                             response.status = 204
                             resolve()
                         })
@@ -88,8 +88,8 @@ export abstract class ProjectService {
 
             // Extract pixel values from each image
             for (let i = 0; i < frames.length; i++) {
-                const image = sharp(frames[i].name);
-                const pixels = await image.removeAlpha().raw().toBuffer();
+                const image = sharp(frames[i].name)
+                const pixels = await image.removeAlpha().raw().toBuffer()
 
                 for (let j = 0; j < pixels.length; j++) {
                     pixelValues[j] += pixels[j]
