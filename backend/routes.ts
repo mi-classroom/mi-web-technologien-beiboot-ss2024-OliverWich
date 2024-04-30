@@ -14,7 +14,7 @@ export const backend = new Elysia()
     }, {
         response: {
             200: t.Array(
-                t.Object({})
+                t.String()
             )
         }
     })
