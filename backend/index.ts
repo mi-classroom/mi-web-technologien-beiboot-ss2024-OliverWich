@@ -17,7 +17,7 @@ function startServer () {
         .use(swagger({
             documentation: {
                 info: {
-                    title: "Still Moving documentation",
+                    title: "Still-Moving API documentation",
                     version: data.version,
                 }
             }
