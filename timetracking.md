@@ -19,4 +19,5 @@
 
 | Stunden | Beschreibung                                                                                                                                                                                 |
 |---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1h      | Einbauen vom Konzept von "Slices" (Teile aus dem Video, identifiziert mit Sekunden Timestamps start/end die in das finale Bild einfließen). Damit ist die Task _eigentlich_ abgeschlossen :D |
+| 0.5h    | Einbauen vom Konzept von "Slices" (Teile aus dem Video, identifiziert mit Sekunden Timestamps start/end die in das finale Bild einfließen). Damit ist die Task _eigentlich_ abgeschlossen :D |
+| 1       | Vorbereiten vom Frontend und Start der basic routing / App Struktur                                                                                                                          |

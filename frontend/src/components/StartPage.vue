@@ -3,31 +3,48 @@ import {RouterLink} from "vue-router"
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <main>
+    <header>
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <div class="greetings">
-        <h1 class="green">Still Moving</h1>
-        <h3>
-          A Project build with
-          <a href="https://bun.sh/" target="_blank" rel="noopener">Bun</a>/
-          <a href="https://elysiajs.com/" target="_blank" rel="noopener">Elysia</a>and
-          <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>
-        </h3>
+      <div class="wrapper">
+        <div class="greetings">
+          <h1 class="green">Still Moving</h1>
+          <h3>
+            A Project build with
+            <a href="https://bun.sh/" target="_blank" rel="noopener">Bun</a>/
+            <a href="https://elysiajs.com/" target="_blank" rel="noopener">Elysia</a>and
+            <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>
+          </h3>
+        </div>
+
+        <nav>
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink to="/dashboard">Start!</RouterLink>
+        </nav>
       </div>
+    </header>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/app">Start!</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <iframe style="height: 80vh; width: 100%" src="/swagger"/>
+    <iframe style="height: 80vh; width: 100%" src="/swagger"/>
+  </main>
 </template>
 
 <style scoped>
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+@media (min-width: 1024px) {
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;
