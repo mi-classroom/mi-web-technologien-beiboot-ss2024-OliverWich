@@ -1,7 +1,7 @@
 import {Elysia, t} from "elysia"
 import data from "../package.json"
 import {UploadService} from "./services/UploadService"
-import {getAllProjects} from "./Projects"
+import {getAllProjects, Slice} from "./Projects"
 import {ProjectService} from "./services/ProjectService"
 
 /**
@@ -36,8 +36,7 @@ export const backend = new Elysia()
     })
     .post('/expose', ({body, set}) => {
         body.options.fps = body.options.fps || 30
-        body.options.start = body.options.start || 0
-        body.options.end = body.options.end || -1
+        body.options.slices = body.options.slices as Array<Slice> || getDefaultFullVideoSlice()
 
         return ProjectService.expose(body.project, body.options, set)
     }, {
@@ -50,12 +49,11 @@ export const backend = new Elysia()
                 fps: t.Optional(t.Number({
                     default: 30
                 })),
-                start: t.Optional(t.Number({
-                    default: 0
-                })),
-                end: t.Optional(t.Number({
-                    default: -1
-                }))
+                slices: t.Optional(t.Array(
+                    t.Object({
+                        start: t.Number({default: 0}),
+                        end: t.Number({default: -1}),
+                    })))
             }),
         })
     })
@@ -66,4 +64,13 @@ function getStatusMessage() {
         online: true,
         version: data.version
     }
+}
+
+function getDefaultFullVideoSlice() : Array<Slice>{
+    return [
+        {
+            start: 0,
+            end: -1
+        }
+    ]
 }

@@ -67,23 +67,32 @@ class Project {
 
     /**
      * @param fps How many frames per second equivalent to return
-     * @param start
-     * @param end
+     * @param slices The slices to get the frames for
      */
-    async getFrames (fps: number = this.fps, start: number = 0, end: number = -1): Promise<Array<BunFile>> {
+    async getFrames (fps: number = this.fps, slices: Array<Slice>): Promise<Array<BunFile>> {
         const frameNames = await readdir(this.framePath)
         const frameFiles: Array<BunFile> = []
 
         const frameInterval = Math.floor(this.fps / fps)
 
-        const startIndex = start * this.fps
-        if (startIndex < 0 || startIndex > frameNames.length) {
-            throw new Error(`Start ${start} not valid! Must be 0 < start > ${frameNames.length / this.fps}`)
+        for (let slice of slices) {
+            frameFiles.push(...this.getFramesForSlice(slice, frameNames, frameInterval))
         }
 
-        const endIndex = end === -1 ? frameNames.length : end * this.fps
+        return frameFiles
+    }
+
+    private getFramesForSlice(slice: Slice, frameNames: Array<string>, frameInterval: number): Array<BunFile> {
+        const frameFiles: Array<BunFile> = []
+
+        const startIndex = slice.start * this.fps
+        if (startIndex >= frameNames.length) {
+            throw new Error(`Start ${slice.start} not valid! Must be 0 < slice.start > ${frameNames.length / this.fps}`)
+        }
+
+        const endIndex = slice.end === -1 ? frameNames.length : slice.end * this.fps
         if (endIndex < 0 || endIndex > frameNames.length || endIndex < startIndex) {
-            throw new Error(`End ${end} not valid! Must be start < end > ${frameNames.length / this.fps}`)
+            throw new Error(`End ${slice.end} not valid! Must be slice.start < slice.end > ${frameNames.length / this.fps}`)
         }
 
         for (let frameIndex = startIndex; frameIndex < endIndex; frameIndex += frameInterval) {
@@ -93,3 +102,5 @@ class Project {
         return frameFiles
     }
 }
+
+export type Slice = {start: number, end: number}

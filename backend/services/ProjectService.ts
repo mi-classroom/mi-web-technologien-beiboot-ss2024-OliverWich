@@ -51,9 +51,9 @@ export abstract class ProjectService {
     static async expose (projectName: string, options: any, _response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
-        const frames = await project.getFrames(options.fps, options.start, options.end)
+        const frames = await project.getFrames(options.fps, options.slices)
 
-        console.info(`Exposing ${frames.length} frames from ${project.name} which corresponds to ${options.fps}fps with mode "${options.mode}" starting at second ${options.start} and ending at ${options.end === -1 ? 'the end' : options.end + ' seconds'}`)
+        console.info(`Exposing ${frames.length} frames out of ${options.slices.length} slices from Project "${project.name}" which corresponds to ${options.fps} fps with mode "${options.mode}".`)
 
         async function getOutFileBuffer () {
             switch (options.mode) {

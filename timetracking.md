@@ -13,3 +13,10 @@
 | 1h      | Implementierung von start/end Optionen                                                                    |
 | 1h      | Cleanup                                                                                                   |
 // 14h
+
+
+## Issue 2: Bilder auswählen
+
+| Stunden | Beschreibung                                                                                                                                                                                 |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1h      | Einbauen vom Konzept von "Slices" (Teile aus dem Video, identifiziert mit Sekunden Timestamps start/end die in das finale Bild einfließen). Damit ist die Task _eigentlich_ abgeschlossen :D |
