@@ -154,6 +154,40 @@ export abstract class ProjectService {
         }
     }
 
+    static async getProjectThumbnail (projectName: string, response: Context["set"]) {
+        const project = await getProjectForName(projectName)
+
+        // If thumbnail already exists, return it
+        const thumbnailPath = `${project.outPath}/thumbnail.png`
+        try {
+            await access(thumbnailPath)
+            return Bun.file(thumbnailPath)
+        } catch (error) {
+            console.info(`No thumbnail found for project "${projectName}"`)
+        }
+
+        // We don't have a thumbnail, get a frame from the first second and use that
+        const frames = await project.getFrames(1, [{start: 0, end: 1}])
+
+        if (frames.length === 0) {
+            const errorString = `Could not get any frames for project "${projectName}"`
+            console.error(errorString)
+            response.status = 500
+            return errorString
+        }
+
+        const thumbnailBuffer = await sharp(frames[0].name)
+            .resize({ height: 360 })
+            .toFormat('webp')
+            .toBuffer()
+
+        const thumbPath = `${project.outPath}/thumbnail.png`
+        await Bun.write(thumbPath, thumbnailBuffer)
+
+        response.status = 200
+        return Bun.file(thumbPath)
+    }
+
     private static async runFfprobe(fileName: string): Promise<FfprobeData> {
         return new Promise((resolve, reject) => {
             ffmpeg.ffprobe(fileName, (err, metadata) => {

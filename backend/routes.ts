@@ -3,6 +3,7 @@ import data from "../package.json"
 import {UploadService} from "./services/UploadService"
 import {getAllProjects, Slice} from "./Projects"
 import {ProjectService, projectInfoDTO } from "./services/ProjectService"
+import {BunFile} from "bun"
 
 /**
  * The routes of the backend.
@@ -26,6 +27,8 @@ export const backend = new Elysia({ prefix: '/api' })
             404: t.String(),
             500: t.String()
         }
+    }).get('/project/:name/thumbnail', ({ params: { name }, set }) => {
+        return ProjectService.getProjectThumbnail(name, set)
     })
     .post('/upload', ({body, set}) => {
             return UploadService.handleFileUpload(body.file, set)
