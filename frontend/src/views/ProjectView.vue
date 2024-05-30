@@ -2,6 +2,8 @@
 defineProps({
   name: String
 })
+
+
 </script>
 
 <template>

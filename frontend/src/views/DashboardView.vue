@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { getProjects } from '@/api'
+import {getProjects} from '@/api'
 import {ref} from "vue"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import { Icon } from '@iconify/vue';
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {Icon} from '@iconify/vue'
 
-const projects = ref<Array<String>>([])
+const projects = ref<Array<string>>([])
 
 getProjects().then((data) => {
-  projects.value = data as Array<String>
+  projects.value = data as Array<string>
 })
 </script>
 
@@ -21,7 +21,7 @@ getProjects().then((data) => {
             <CardTitle>{{ project }}</CardTitle>
           </CardHeader>
           <CardContent>
-            Information about this project, possibly a preview image.
+            <img :src="`/api/project/${project}/thumbnail`" :alt="`Thumbnail of project ${project}`"/>
           </CardContent>
         </Card>
       </router-link>
@@ -30,7 +30,7 @@ getProjects().then((data) => {
           <CardTitle class="text-center">Add a project</CardTitle>
         </CardHeader>
         <CardContent class="flex justify-center">
-          <Icon icon="bi:plus-circle" class="text-3xl" />
+          <Icon icon="bi:plus-circle" class="text-3xl"/>
         </CardContent>
       </Card>
     </div>
