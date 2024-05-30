@@ -21,16 +21,6 @@ const route = useRoute()
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger @click="router.go(1)" class="float-right mr-2 p-2 rounded-full border border-accent-foreground bg-accent">
-          <Icon icon="bi:arrow-right" class="text-xl"/>
-        </TooltipTrigger>
-        <TooltipContent class="bg-transparent bg-accent">
-          <p class="text-accent-foreground">Navigate forward</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
   </nav>
   <RouterView/>
 </template>
