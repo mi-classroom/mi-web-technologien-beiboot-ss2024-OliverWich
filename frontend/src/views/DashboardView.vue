@@ -15,14 +15,16 @@ getProjects().then((data) => {
   <main id="dashboard">
     <h1 class="mb-6 text-5xl font-bold">All Projects:</h1>
     <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4">
-      <Card v-for="project in projects" class="w-[300px]">
-        <CardHeader>
-          <CardTitle>{{ project }}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          Information about this project, possibly a preview image.
-        </CardContent>
-      </Card>
+      <router-link v-for="project in projects" :to="'project/' + project">
+        <Card class="w-[300px] cursor-pointer">
+          <CardHeader>
+            <CardTitle>{{ project }}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            Information about this project, possibly a preview image.
+          </CardContent>
+        </Card>
+      </router-link>
       <Card class="border-dashed cursor-pointer">
         <CardHeader>
           <CardTitle class="text-center">Add a project</CardTitle>
