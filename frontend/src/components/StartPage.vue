@@ -13,7 +13,7 @@ import {RouterLink} from "vue-router"
           <h3>
             A Project build with
             <a href="https://bun.sh/" target="_blank" rel="noopener">Bun</a>/
-            <a href="https://elysiajs.com/" target="_blank" rel="noopener">Elysia</a>and
+            <a href="https://elysiajs.com/" target="_blank" rel="noopener">Elysia</a> and
             <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>
           </h3>
         </div>
