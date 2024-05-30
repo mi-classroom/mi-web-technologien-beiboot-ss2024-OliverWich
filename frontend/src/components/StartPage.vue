@@ -9,10 +9,11 @@ import {RouterLink} from "vue-router"
 
       <div class="wrapper">
         <div class="greetings">
-          <h1 class="green">Still Moving</h1>
-          <h3>
+          <h1>Still Moving</h1>
+          <h2>Create long exposure images from videos.</h2>
+          <h3 class="italic">
             A Project build with
-            <a href="https://bun.sh/" target="_blank" rel="noopener">Bun</a>/
+            <a href="https://bun.sh/" target="_blank" rel="noopener">Bun</a> /
             <a href="https://elysiajs.com/" target="_blank" rel="noopener">Elysia</a> and
             <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>
           </h3>
@@ -114,18 +115,16 @@ h1 {
   top: -10px;
 }
 
-h3 {
+h2 {
   font-size: 1.2rem;
 }
 
-.greetings h1,
-.greetings h3 {
+.greetings h1 {
   text-align: center;
 }
 
 @media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
+  .greetings h1{
     text-align: left;
   }
 }
