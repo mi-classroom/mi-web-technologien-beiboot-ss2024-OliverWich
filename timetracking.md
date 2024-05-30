@@ -23,3 +23,4 @@
 | 1       | Vorbereiten vom Frontend und Start der basic routing / App Struktur                                                                                                                          |
 | 0.5h    | Einbinden und experimentieren mit shadcn-vue                                                                                                                                                 |
 | 0.5h    | Dashboard                                                                                                                                                                                    |
+| 0.75h   | Navigation and Project view start                                                                                                                                                               |
