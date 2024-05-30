@@ -1,14 +1,14 @@
-import {Context} from "elysia"
+import {Context, Static, t} from "elysia"
 import {getProjectForName} from "../Projects"
 
 import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
-import ffmpeg from "fluent-ffmpeg"
-import {access, mkdir} from "node:fs/promises"
+import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
+import {access, mkdir, readdir} from "node:fs/promises"
 import sharp from "sharp"
 
 ffmpeg.setFfmpegPath(<string>ffmpegPath)
-ffmpeg.setFfprobePath(ffprobePath) // Might use this to gather infos about the file
+ffmpeg.setFfprobePath(ffprobePath)
 
 
 export abstract class ProjectService {
@@ -114,4 +114,62 @@ export abstract class ProjectService {
         await Bun.write(outPath, await getOutFileBuffer())
         return Bun.file(outPath)
     }
+
+    static async getProjectInfo (projectName: string, response: Context["set"]) : Promise<Static<typeof projectInfoDTO> | string>{
+        const project = await getProjectForName(projectName)
+
+        const projectFileName = project.sourceFile.name
+
+        if (!projectFileName) {
+            const errorString = `Could not find project file for project "${projectName}"`
+            console.error(errorString)
+            response.status = 404
+            return errorString
+        }
+
+        const metaData = await this.runFfprobe(projectFileName)
+
+        if (!metaData || !metaData.format) {
+            const errorString = `Could not get meta data for project "${projectName}"`
+            console.error(errorString)
+            response.status = 500
+            return errorString
+        }
+
+        if (!metaData.format.duration) {
+            const errorString = `Could not get duration for project "${projectName}"`
+            console.error(errorString)
+            response.status = 500
+            return errorString
+        }
+
+        const frameCount = await readdir(project.framePath).then(files => files.length)
+
+        response.status = 200
+        return {
+            name: project.name,
+            fps: project.fps,
+            duration: metaData.format.duration,
+            processed_frames: frameCount
+        }
+    }
+
+    private static async runFfprobe(fileName: string): Promise<FfprobeData> {
+        return new Promise((resolve, reject) => {
+            ffmpeg.ffprobe(fileName, (err, metadata) => {
+                if (err) {
+                    reject(err)
+                }
+
+                resolve(metadata)
+            })
+        })
+    }
 }
+
+export const projectInfoDTO = t.Object({
+    name: t.String(),
+    fps: t.Number(),
+    duration: t.Number(),
+    processed_frames: t.Number(),
+})

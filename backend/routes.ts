@@ -1,13 +1,13 @@
-import {Elysia, t} from "elysia"
+import {Elysia, Static, t} from "elysia"
 import data from "../package.json"
 import {UploadService} from "./services/UploadService"
 import {getAllProjects, Slice} from "./Projects"
-import {ProjectService} from "./services/ProjectService"
+import {ProjectService, projectInfoDTO } from "./services/ProjectService"
 
 /**
  * The routes of the backend.
  */
-export const backend = new Elysia()
+export const backend = new Elysia({ prefix: '/api' })
     .get('/status', getStatusMessage)
     .get('/projects', () => {
         return getAllProjects()
@@ -16,6 +16,15 @@ export const backend = new Elysia()
             200: t.Array(
                 t.String()
             )
+        }
+    })
+    .get('/project/:name', ({ params: { name }, set }): Promise<Static<typeof projectInfoDTO> | string> => {
+        return ProjectService.getProjectInfo(name, set)
+    }, {
+        response: {
+            200: projectInfoDTO,
+            404: t.String(),
+            500: t.String()
         }
     })
     .post('/upload', ({body, set}) => {

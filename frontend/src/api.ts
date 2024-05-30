@@ -1,4 +1,8 @@
 export function apiCall(url: string, method: string = 'GET', body: any = null) {
+    if (!url.startsWith('/api')) {
+        url = `/api${url}`
+    }
+
     return fetch(url, {
         method: method,
         body: body ? JSON.stringify(body) : undefined,
