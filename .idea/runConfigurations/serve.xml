@@ -6,7 +6,6 @@
       <script value="serve" />
     </scripts>
     <node-interpreter value="$USER_HOME$/.bun/bin/bun" />
-    <package-manager value="$USER_HOME$/.bun/bin/bun" />
     <envs />
     <method v="2" />
   </configuration>
