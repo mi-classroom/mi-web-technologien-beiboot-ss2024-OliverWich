@@ -26,3 +26,4 @@
 | 0.75h   | Navigation buttons and Project-view start                                                                                                                                                    |
 | 1h      | Project info endpoint and preparation for project view                                                                                                                                       |
 | 1h      | Frame carousel with thumbnails                                                                                                                                                               |
+| 1,5h    | Optimize thumbnail generation                                                                                                                                                                |

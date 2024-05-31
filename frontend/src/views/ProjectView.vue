@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/carousel'
 import {ref} from "vue"
 import {watchOnce} from "@vueuse/core"
-import {getProjectInfo, getProjects} from "@/api"
+import {getProjectInfo} from "@/api"
 
 const props = defineProps({
   projectName: {

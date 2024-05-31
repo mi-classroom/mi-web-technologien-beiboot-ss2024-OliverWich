@@ -47,7 +47,11 @@ export const backend = new Elysia({ prefix: '/api' })
     }, {
         body: t.Object({
             project: t.String(),
-            options: t.Optional(t.Object({})),
+            options: t.Optional(t.Object({
+                resolution: t.Number({
+                    default: 720,
+                }),
+            })),
         }),
     })
     .post('/expose', ({body, set}) => {

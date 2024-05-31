@@ -1,4 +1,4 @@
-import {readdir} from "node:fs/promises"
+import {access, mkdir, readdir} from "node:fs/promises"
 import {BunFile} from "bun"
 
 const projectsPath = "./projects"
@@ -53,11 +53,23 @@ class Project {
             return Bun.file(`${path}/${sourceFileName}`)
         }
 
-        return new Project(
+        const newProject = new Project(
             name,
             path,
             await getSourceFile()
         )
+
+        async function createDirIfNotExists (dir: string) {
+            return access(dir)
+                .then(() => undefined)
+                .catch(() => mkdir(dir))
+        }
+
+        await createDirIfNotExists(`${newProject.framePath}`)
+        await createDirIfNotExists(`${newProject.thumbnailPath}`)
+        await createDirIfNotExists(`${newProject.out}`)
+
+        return newProject
     }
 
     async saveSourceFile(file: File) {
@@ -67,9 +79,13 @@ class Project {
         this.sourceFile = Bun.file(filePath)
     }
 
-    async getFrameByNumber(frameNumber: number): Promise<BunFile> {
+    async getFrameNameByNumber(frameNumber: number) {
         const frameNames = await readdir(this.framePath)
-        return Bun.file(`${this.framePath}/${frameNames[frameNumber]}`)
+        return frameNames[frameNumber]
+    }
+
+    async getFrameByNumber(frameNumber: number): Promise<BunFile> {
+        return Bun.file(`${this.framePath}/${await this.getFrameNameByNumber(frameNumber)}`)
     }
 
     /**

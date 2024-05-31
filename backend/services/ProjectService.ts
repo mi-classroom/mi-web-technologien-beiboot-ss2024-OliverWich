@@ -5,7 +5,7 @@ import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
 import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
 import {access, mkdir, readdir} from "node:fs/promises"
-import sharp from "sharp"
+import sharp, {OutputInfo} from "sharp"
 
 ffmpeg.setFfmpegPath(<string>ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath)
@@ -15,37 +15,53 @@ export abstract class ProjectService {
     static async process (projectName: string, options: any, response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
-        // TODO: handle case where the file is already processed. In this case abort with 409 and only go through if user specified the `force` option
-        async function createDirIfNotExists (dir: string) {
-            return access(dir)
-                .then(() => undefined)
-                .catch(() => mkdir(dir))
+        if (!project.sourceFile.name) {
+            const errorString = `Could not find project file for project "${projectName}"`
+            console.error(errorString)
+            response.status = 404
+            return errorString
         }
 
-        await createDirIfNotExists(`${project.path}/frames`)
+        // The main processing step
+        await this.runFfmpeg(project.sourceFile.name, project.fps, project.framePath, options?.resolution)
 
-        async function runFfmpeg (): Promise<void> {
-            return new Promise((resolve, reject) => {
-                try {
-                    console.info(`Starting to extract frames from ${project.sourceFile.name}`)
+        // Create thumbnails in webp
+        console.log(`Creating thumbnails for project ${projectName}...`)
+        const thumbnailPromises: Array<Promise<OutputInfo>> = []
+        const frameNames = await readdir(project.framePath)
+        frameNames.forEach(frame => {
+            thumbnailPromises.push(sharp(`${project.framePath}/${frame}`)
+                .resize({ height: 360 })
+                .toFormat('webp')
+                .toFile(`${project.thumbnailPath}/${frame.slice(0, -3)}webp`)
+            )
+        })
 
-                    ffmpeg(project.sourceFile.name)
-                        .outputOptions('-vf','scale=-2:720')
-                        .fps(project.fps)
-                        .saveToFile(`${project.framePath}/%3d.png`)
-                        .on('end', function() {
-                            console.info(`Finished processing file ${project.sourceFile.name}`)
-                            response.status = 204
-                            resolve()
-                        })
-                        .run()
-                } catch (error) {
-                    reject(error)
-                }
-            })
-        }
+        await Promise.all(thumbnailPromises)
 
-        return await runFfmpeg()
+        console.log(`Done processing project "${projectName}". Frames extracted and thumbnails generated.`)
+
+        response.status = 204
+    }
+
+    private static async runFfmpeg (targetFilePath: string, fps: number, targetFolder: string, resolution: number = 720): Promise<void> {
+        return new Promise((resolve, reject) => {
+            try {
+                console.info(`Starting to extract frames from ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
+
+                ffmpeg(targetFilePath)
+                    .outputOptions('-vf',`scale=-2:${resolution}`)
+                    .fps(fps)
+                    .saveToFile(`${targetFolder}/%3d.png`)
+                    .on('end', function() {
+                        console.info(`Finished processing file ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
+                        resolve()
+                    })
+                    .run()
+            } catch (error) {
+                reject(error)
+            }
+        })
     }
 
     static async expose (projectName: string, options: any, _response: Context["set"]) {
@@ -154,13 +170,20 @@ export abstract class ProjectService {
         }
     }
 
-    // TODO: We should not generate this on the fly as this might cause an OOM kill... This should be generated in the initial processing step directly and not with sharp.
-    //       We will keep this as a fallback for old projects though
+    /**
+     * Returns a thumbnail for the requested frame.
+     * A thumbnail should be present because it was created at the preprocessing step, but if it wasn't, generate it on the fly.
+     *
+     * @param projectName
+     * @param frameNumber
+     * @param response
+     */
     static async getThumbnailForFrame (projectName: string, frameNumber: number, response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
         // if thumbnail already exists, return it
-        const thumbnailPath = `${project.thumbnailPath}/${frameNumber}.webp`
+        const thumbnailNames = await readdir(project.thumbnailPath)
+        const thumbnailPath = `${project.thumbnailPath}/${thumbnailNames[frameNumber]}`
         try {
             await access(thumbnailPath)
             return Bun.file(thumbnailPath)
@@ -172,13 +195,12 @@ export abstract class ProjectService {
 
         const frame = await project.getFrameByNumber(frameNumber)
 
-        const thumbnailBuffer = await sharp(frame.name)
+        const thumbPath = `${project.thumbnailPath}/${(await project.getFrameNameByNumber(frameNumber)).slice(0, -3)}webp`
+
+        await sharp(frame.name)
             .resize({ height: 360 })
             .toFormat('webp')
-            .toBuffer()
-
-        const thumbPath = `${project.thumbnailPath}/${frameNumber}.webp`
-        await Bun.write(thumbPath, thumbnailBuffer)
+            .toFile(thumbPath)
 
         response.status = 200
         return Bun.file(thumbPath)
@@ -188,7 +210,7 @@ export abstract class ProjectService {
         const project = await getProjectForName(projectName)
 
         // If thumbnail already exists, return it
-        const thumbnailPath = `${project.outPath}/thumbnail.png`
+        const thumbnailPath = `${project.outPath}/thumbnail.webp`
         try {
             await access(thumbnailPath)
             return Bun.file(thumbnailPath)
@@ -213,7 +235,7 @@ export abstract class ProjectService {
             .toFormat('webp')
             .toBuffer()
 
-        const thumbPath = `${project.outPath}/thumbnail.png`
+        const thumbPath = `${project.outPath}/thumbnail.webp`
         await Bun.write(thumbPath, thumbnailBuffer)
 
         response.status = 200
