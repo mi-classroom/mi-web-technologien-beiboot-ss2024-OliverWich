@@ -27,8 +27,12 @@ export const backend = new Elysia({ prefix: '/api' })
             404: t.String(),
             500: t.String()
         }
-    }).get('/project/:name/thumbnail', ({ params: { name }, set }) => {
+    })
+    .get('/project/:name/thumbnail', ({ params: { name }, set }) => {
         return ProjectService.getProjectThumbnail(name, set)
+    })
+    .get('/project/:name/frame/:frameNumber/thumbnail', ({ params: { name, frameNumber }, set }) => {
+        return ProjectService.getThumbnailForFrame(name, Number(frameNumber), set)
     })
     .post('/upload', ({body, set}) => {
             return UploadService.handleFileUpload(body.file, set)

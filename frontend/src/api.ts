@@ -23,3 +23,7 @@ export function apiPOST(url: string, body: any) {
 export function getProjects() {
     return apiGET('/projects')
 }
+
+export function getProjectInfo(projectName: string) {
+    return apiGET(`/project/${projectName}`)
+}

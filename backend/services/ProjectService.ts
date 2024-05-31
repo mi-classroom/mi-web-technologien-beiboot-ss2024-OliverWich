@@ -150,8 +150,38 @@ export abstract class ProjectService {
             name: project.name,
             fps: project.fps,
             duration: metaData.format.duration,
-            processed_frames: frameCount
+            frame_count: frameCount
         }
+    }
+
+    // TODO: We should not generate this on the fly as this might cause an OOM kill... This should be generated in the initial processing step directly and not with sharp.
+    //       We will keep this as a fallback for old projects though
+    static async getThumbnailForFrame (projectName: string, frameNumber: number, response: Context["set"]) {
+        const project = await getProjectForName(projectName)
+
+        // if thumbnail already exists, return it
+        const thumbnailPath = `${project.thumbnailPath}/${frameNumber}.webp`
+        try {
+            await access(thumbnailPath)
+            return Bun.file(thumbnailPath)
+        } catch (error) {
+            console.info(`No thumbnail found for frame ${frameNumber} of project "${projectName}"`)
+        }
+
+        console.info(`Creating thumbnail for frame ${frameNumber} of project "${projectName}"`)
+
+        const frame = await project.getFrameByNumber(frameNumber)
+
+        const thumbnailBuffer = await sharp(frame.name)
+            .resize({ height: 360 })
+            .toFormat('webp')
+            .toBuffer()
+
+        const thumbPath = `${project.thumbnailPath}/${frameNumber}.webp`
+        await Bun.write(thumbPath, thumbnailBuffer)
+
+        response.status = 200
+        return Bun.file(thumbPath)
     }
 
     static async getProjectThumbnail (projectName: string, response: Context["set"]) {
@@ -163,8 +193,10 @@ export abstract class ProjectService {
             await access(thumbnailPath)
             return Bun.file(thumbnailPath)
         } catch (error) {
-            console.info(`No thumbnail found for project "${projectName}"`)
+            console.info(`No thumbnail found for project "${projectName}".`)
         }
+
+        console.info(`Creating thumbnail for project "${projectName}".`)
 
         // We don't have a thumbnail, get a frame from the first second and use that
         const frames = await project.getFrames(1, [{start: 0, end: 1}])
@@ -205,5 +237,5 @@ export const projectInfoDTO = t.Object({
     name: t.String(),
     fps: t.Number(),
     duration: t.Number(),
-    processed_frames: t.Number(),
+    frame_count: t.Number(),
 })

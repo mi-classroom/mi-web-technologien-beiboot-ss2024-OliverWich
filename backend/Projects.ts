@@ -25,6 +25,7 @@ class Project {
     name: string
     path: string
     framePath: string
+    thumbnailPath: string
     outPath: string
     sourceFile: BunFile
     // TODO: store this in a config file per project
@@ -34,6 +35,7 @@ class Project {
         this.name = name
         this.path = path
         this.framePath = `${this.path}/frames`
+        this.thumbnailPath = `${this.path}/thumbs`
         this.outPath = `${this.path}/out`
         this.sourceFile = sourceFile
     }
@@ -63,6 +65,11 @@ class Project {
 
         await Bun.write(filePath, await file.arrayBuffer())
         this.sourceFile = Bun.file(filePath)
+    }
+
+    async getFrameByNumber(frameNumber: number): Promise<BunFile> {
+        const frameNames = await readdir(this.framePath)
+        return Bun.file(`${this.framePath}/${frameNames[frameNumber]}`)
     }
 
     /**
