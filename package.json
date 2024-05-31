@@ -28,6 +28,7 @@
     "sharp": "^0.33.3",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "vue-slider-component": "^4.1.0-beta.7",
     "vue3-lazyload": "^0.3.8"
   },
   "devDependencies": {

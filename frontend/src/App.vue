@@ -14,11 +14,11 @@ const route = useRoute()
   <nav class="absolute w-screen z-auto" v-if="route.name !== 'home'">
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger @click="router.go(-1)" class="float-left ml-2 p-2 rounded-full border border-accent-foreground bg-accent">
+        <TooltipTrigger @click="router.go(-1)" class="float-left ml-2 p-2 rounded-full border border-secondary-foreground bg-secondary">
           <Icon icon="bi:arrow-left" class="text-xl"/>
         </TooltipTrigger>
-        <TooltipContent class="bg-transparent bg-accent">
-          <p class="text-accent-foreground">Navigate back</p>
+        <TooltipContent class="bg-transparent bg-secondary">
+          <p class="text-secondary-foreground">Navigate back</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

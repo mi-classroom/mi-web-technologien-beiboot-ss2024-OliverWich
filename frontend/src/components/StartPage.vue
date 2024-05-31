@@ -64,7 +64,7 @@ nav {
 }
 
 nav a.router-link-exact-active {
-  color: var(--accent-foreground);
+  color: var(--accent);
 }
 
 nav a.router-link-exact-active:hover {
