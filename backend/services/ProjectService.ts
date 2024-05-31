@@ -4,8 +4,8 @@ import {getProjectForName} from "../Projects"
 import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
 import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
-import {access, mkdir, readdir} from "node:fs/promises"
-import sharp, {OutputInfo} from "sharp"
+import {access, readdir} from "node:fs/promises"
+import sharp from "sharp"
 
 ffmpeg.setFfmpegPath(<string>ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath)
@@ -22,24 +22,8 @@ export abstract class ProjectService {
             return errorString
         }
 
-        // The main processing step
+        // Extract frames from the video
         await this.runFfmpeg(project.sourceFile.name, project.fps, project.framePath, options?.resolution)
-
-        // Create thumbnails in webp
-        console.log(`Creating thumbnails for project ${projectName}...`)
-        const thumbnailPromises: Array<Promise<OutputInfo>> = []
-        const frameNames = await readdir(project.framePath)
-        frameNames.forEach(frame => {
-            thumbnailPromises.push(sharp(`${project.framePath}/${frame}`)
-                .resize({ height: 360 })
-                .toFormat('webp')
-                .toFile(`${project.thumbnailPath}/${frame.slice(0, -3)}webp`)
-            )
-        })
-
-        await Promise.all(thumbnailPromises)
-
-        console.log(`Done processing project "${projectName}". Frames extracted and thumbnails generated.`)
 
         response.status = 204
     }
@@ -172,7 +156,7 @@ export abstract class ProjectService {
 
     /**
      * Returns a thumbnail for the requested frame.
-     * A thumbnail should be present because it was created at the preprocessing step, but if it wasn't, generate it on the fly.
+     * If it is present, return it, but if it wasn't, generate it on the fly and save to disk.
      *
      * @param projectName
      * @param frameNumber
