@@ -10,6 +10,7 @@ const route = useRoute()
 </script>
 
 <template>
+  <RouterView/>
   <nav class="absolute w-screen z-auto" v-if="route.name !== 'home'">
     <TooltipProvider>
       <Tooltip>
@@ -22,7 +23,6 @@ const route = useRoute()
       </Tooltip>
     </TooltipProvider>
   </nav>
-  <RouterView/>
 </template>
 
 <style>
