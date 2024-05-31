@@ -21,7 +21,7 @@ import {RouterLink} from "vue-router"
 
         <nav>
           <RouterLink to="/">Home</RouterLink>
-          <RouterLink to="/dashboard">Start!</RouterLink>
+          <RouterLink to="/dashboard" class="text-accent hover:underline">Start!</RouterLink>
         </nav>
       </div>
     </header>
@@ -64,7 +64,7 @@ nav {
 }
 
 nav a.router-link-exact-active {
-  color: var(--accent);
+  text-decoration: underline;
 }
 
 nav a.router-link-exact-active:hover {
@@ -74,7 +74,7 @@ nav a.router-link-exact-active:hover {
 nav a {
   display: inline-block;
   padding: 0 1rem;
-  border-left: 1px solid var(--ring);
+  border-left: 1px solid hsl(var(--ring));
 }
 
 nav a:first-of-type {
