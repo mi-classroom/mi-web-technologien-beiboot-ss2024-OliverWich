@@ -20,10 +20,13 @@ export function apiCall(url: string, method: string = 'GET', body: any = undefin
             throw new Error(response.statusText)
         }
 
+        // If it is json, return json, if it is text, return text, otherwise, return blob
         if (response.headers.get('content-type')?.includes('application/json')) {
             return response.json()
-        } else {
+        } else if (response.headers.get('content-type')?.includes('text')) {
             return response.text()
+        } else {
+            return response.blob()
         }
     })
 }
@@ -63,4 +66,11 @@ export function getProjects() {
 
 export function getProjectInfo(projectName: string) {
     return apiGET(`/project/${projectName}`)
+}
+
+export function exposeProject(projectName: string, options: any) {
+    return apiPOST(`/expose`, {
+        project: projectName,
+        options: options,
+    })
 }
