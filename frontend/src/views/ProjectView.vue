@@ -98,6 +98,10 @@ function frameIsInSelection(frameNumber: number) {
   return false
 }
 
+function frameIndexToSeconds(frameIndex: number) {
+  return (frameIndex / Number(get(projectInfo, 'fps'))).toFixed(3) + 's'
+}
+
 // Render form
 const renderModes = ref([
   'mean',
@@ -223,6 +227,7 @@ const onSubmit = form.handleSubmit(async (values) => {
         :drag-on-click="true"
         :process-style="{background: 'hsl(var(--accent))'}"
         :tooltip-style="{background: 'hsl(var(--secondary))', color: 'hsl(var(--secondary-foreground))'}"
+        :tooltip-formatter="frameIndexToSeconds"
         :process="rawValuesToSelectionArrays as ProcessProp"
     ></vue-slider>
 
