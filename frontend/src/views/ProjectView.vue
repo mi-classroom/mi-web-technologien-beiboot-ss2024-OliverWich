@@ -150,6 +150,7 @@ watchEffect(() => {
   if (!newFrameInterval || !Number.isFinite(newFrameInterval)) return
 
   set(frameInterval, newFrameInterval)
+  get(carouselApi)?.reInit()
 })
 
 const loading = ref(false)
