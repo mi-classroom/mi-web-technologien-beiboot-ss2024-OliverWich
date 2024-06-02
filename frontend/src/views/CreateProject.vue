@@ -16,7 +16,16 @@ import { Input } from '@/components/ui/input'
 import {createProject, processProject} from "@/api"
 import {ref} from "vue"
 import {Icon} from "@iconify/vue"
-import {set} from "@vueuse/core"
+import {get, set} from "@vueuse/core"
+import {useRouter} from "vue-router"
+
+const loading = ref(false)
+const buttonText = ref('Upload and create project')
+const buttonIcon = ref('mdi:upload')
+const projectCreated = ref(false)
+const createdProjectName = ref('')
+
+const router = useRouter()
 
 const formSchema = toTypedSchema(z.object({
   file: z.instanceof(File)
@@ -40,18 +49,23 @@ function handleFileSelect(value: FileList | null) {
   form.setFieldValue('file', file)
 
   console.info('File selected:', value)
+  set(projectCreated, false)
+  set(buttonText, `Create project by uploading "${file.name}"`)
+  set(buttonIcon, 'mdi:upload')
 }
 
-const loading = ref(false)
-const buttonText = ref('Upload and create project')
-const buttonIcon = ref('mdi:upload')
-
 const onSubmit = form.handleSubmit(async (values) => {
+  if (get(projectCreated)) {
+    await router.push({name: 'project', params: {projectName: get(createdProjectName)}})
+    return
+  }
+
   set(buttonText, 'Uploading File...')
   set(buttonIcon, 'mdi:loading')
   set(loading, true)
 
   const projectName = await createProject(values.file)
+  set(createdProjectName, projectName)
 
   console.info(`Project created: ${projectName}`)
 
@@ -59,7 +73,8 @@ const onSubmit = form.handleSubmit(async (values) => {
   await processProject(projectName)
 
   set(loading, false)
-  set(buttonText, 'Project created!')
+  set(projectCreated, true)
+  set(buttonText, 'Project created! Go and start exposing!')
   set(buttonIcon, 'mdi:check')
 })
 
