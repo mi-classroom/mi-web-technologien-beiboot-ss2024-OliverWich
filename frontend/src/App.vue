@@ -11,7 +11,7 @@ const route = useRoute()
 
 <template>
   <RouterView/>
-  <nav class="absolute h-full flex flex-col justify-between pl-2 pt-2 pb-2 left-0" v-if="route.name !== 'home'">
+  <nav class="fixed h-full flex flex-col justify-between pl-2 pt-2 pb-2 left-0" v-if="route.name !== 'home'">
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger @click="router.go(-1)" class="z-auto float-left p-2 rounded-full border border-secondary-foreground bg-secondary">
