@@ -42,6 +42,7 @@ function setApi(val: CarouselApi) {
 // Slider
 const slider = ref<InstanceType<typeof VueSlider>>()
 const selections = ref<Array<number>>([])
+const focussedFrame = ref<number>(0)
 
 watchOnce(projectInfo, (info) => {
   selections.value = [0, Number(info.frame_count)]
@@ -57,12 +58,26 @@ function addSelectionPoint(index: number) {
 watch(selections, (n, o) => {
   const movedIndex = n.filter(x => !o.includes(x))[0]
 
-  const newFrameIndex = convertRawFrameIndexToCarouselFrameIndex(movedIndex, get(frameInterval))
+  scrollCarouselToFrameIndex(movedIndex)
+})
+
+watch(focussedFrame, (n, o) => {
+  if (n === o) return
+
+  scrollCarouselToFrameIndex(n, false)
+})
+
+function scrollCarouselToFrameIndex(frameIndex: number, updateActiveFrame = true) {
+  const newFrameIndex = convertRawFrameIndexToCarouselFrameIndex(frameIndex, get(frameInterval))
 
   if ((newFrameIndex !== 0 && !newFrameIndex) || Number.isNaN(newFrameIndex)) return
 
+  if (updateActiveFrame) {
+    set(focussedFrame, frameIndex)
+  }
+
   carouselApi.value?.scrollTo(newFrameIndex)
-})
+}
 
 function convertRawFrameIndexToCarouselFrameIndex(frameIndex: number, frameInterval: number): number | null {
   // Check if the original index is one of the indices we care about, considering 1-based indexing
@@ -194,6 +209,18 @@ const onSubmit = form.handleSubmit(async (values) => {
 <template>
   <main id="project" class="w-full h-full p-16 relative">
     <h1 class="mb-6 text-5xl font-bold">Project <span class="italic underline">{{ projectName }}</span>:</h1>
+    <vue-slider
+        ref="scrubber"
+        v-if="projectInfo.frame_count"
+        v-model="focussedFrame"
+        :max="Number(projectInfo.frame_count)"
+        :enable-cross="false"
+        :drag-on-click="true"
+        :rail-style="{background: 'hsl(var(--secondary))'}"
+        :tooltip-style="{background: 'hsl(var(--secondary))', color: 'hsl(var(--secondary-foreground))'}"
+        :tooltip-formatter="frameIndexToSeconds"
+        :process="false"
+    ></vue-slider>
     <Carousel
         class="w-full"
         :opts="{
@@ -226,6 +253,7 @@ const onSubmit = form.handleSubmit(async (values) => {
         :max="Number(projectInfo.frame_count)"
         :enable-cross="false"
         :drag-on-click="true"
+        :rail-style="{background: 'hsl(var(--secondary))'}"
         :process-style="{background: 'hsl(var(--accent))'}"
         :tooltip-style="{background: 'hsl(var(--secondary))', color: 'hsl(var(--secondary-foreground))'}"
         :tooltip-formatter="frameIndexToSeconds"

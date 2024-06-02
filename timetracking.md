@@ -30,3 +30,4 @@
 | 2h      | Selection slider                                                                                                                                                                             |
 | 1h      | Upload / create new project via the frontend                                                                                                                                                 |
 | 1,5h    | Render via frontend                                                                                                                                                                          |
+| 0,5h    | Scrubber                                                                                                                                                                                     |
