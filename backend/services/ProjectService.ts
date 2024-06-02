@@ -214,13 +214,12 @@ export abstract class ProjectService {
             return errorString
         }
 
-        const thumbnailBuffer = await sharp(frames[0].name)
+        const thumbPath = `${project.outPath}/thumbnail.webp`
+
+        await sharp(frames[0].name)
             .resize({ height: 360 })
             .toFormat('webp')
-            .toBuffer()
-
-        const thumbPath = `${project.outPath}/thumbnail.webp`
-        await Bun.write(thumbPath, thumbnailBuffer)
+            .toFile(thumbPath)
 
         response.status = 200
         return Bun.file(thumbPath)
