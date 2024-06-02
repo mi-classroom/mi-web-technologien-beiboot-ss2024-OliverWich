@@ -55,14 +55,14 @@ export abstract class ProjectService {
 
         console.info(`Exposing ${frames.length} frames out of ${options.slices.length} slices from Project "${project.name}" which corresponds to ${options.fps} fps with mode "${options.mode}".`)
 
-        async function getOutFileBuffer () {
+        async function writeOutFile (path: string) {
             switch (options.mode) {
-                case 'mean': return manualMeanCalculation()
-                default: return useSharpCompositing()
+                case 'mean': return manualMeanCalculation(path)
+                default: return useSharpCompositing(path)
             }
         }
 
-        async function useSharpCompositing() {
+        async function useSharpCompositing(path: string) {
             const sharpInputFrames = frames.map(frame => {
                 return {
                     input: frame.name,
@@ -70,12 +70,12 @@ export abstract class ProjectService {
                 }
             })
 
-            return await sharp(sharpInputFrames.pop()?.input)
+            await sharp(sharpInputFrames.pop()?.input)
                 .composite(sharpInputFrames)
-                .toBuffer()
+                .toFile(path)
         }
 
-        async function manualMeanCalculation (): Promise<Buffer> {
+        async function manualMeanCalculation (path: string) {
             const firstImage = sharp(frames[0].name)
             const { width, height } = await firstImage.metadata()
 
@@ -99,7 +99,7 @@ export abstract class ProjectService {
             // Calculate mean pixel values
             const meanPixelValues = pixelValues.map(value => Math.floor(value / frames.length))
 
-            return sharp(Buffer.from(meanPixelValues), {
+            await sharp(Buffer.from(meanPixelValues), {
                 raw: {
                     width: width,
                     height: height,
@@ -107,11 +107,13 @@ export abstract class ProjectService {
                 }
             })
                 .toFormat('png')
-                .toBuffer()
+                .toFile(path)
         }
 
         const outPath = `${project.outPath}/out.png`
-        await Bun.write(outPath, await getOutFileBuffer())
+
+        await writeOutFile(outPath)
+
         return Bun.file(outPath)
     }
 
