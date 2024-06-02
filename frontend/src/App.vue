@@ -11,14 +11,22 @@ const route = useRoute()
 
 <template>
   <RouterView/>
-  <nav class="absolute left-0" v-if="route.name !== 'home'">
+  <nav class="absolute h-full flex flex-col justify-between pl-2 pt-2 pb-2 left-0" v-if="route.name !== 'home'">
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger @click="router.go(-1)" class="z-auto float-left ml-2 p-2 rounded-full border border-secondary-foreground bg-secondary">
+        <TooltipTrigger @click="router.go(-1)" class="z-auto float-left p-2 rounded-full border border-secondary-foreground bg-secondary">
           <Icon icon="bi:arrow-left" class="text-xl"/>
         </TooltipTrigger>
         <TooltipContent class="bg-transparent bg-secondary">
           <p class="text-secondary-foreground">Navigate back</p>
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger @click="router.push({name: 'home'})" class="z-auto float-bottom p-2 rounded-full border border-secondary-foreground bg-secondary">
+          <Icon icon="mdi:home" class="text-xl"/>
+        </TooltipTrigger>
+        <TooltipContent class="bg-transparent bg-secondary">
+          <p class="text-secondary-foreground">Go Home</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
