@@ -29,5 +29,7 @@
 | 1,5h    | Optimize thumbnail generation                                                                                                                                                                |
 | 2h      | Selection slider                                                                                                                                                                             |
 | 1h      | Upload / create new project via the frontend                                                                                                                                                 |
-| 1,5h    | Render via frontend                                                                                                                                                                          |
+| 1,5h    | Render via frontend (includes respecting fps option in the carousel and slider/ slice selection mechanism)                                                                                   |
 | 0,5h    | Scrubber                                                                                                                                                                                     |
+| 0,5h    | Cleanup and small UI improvements                                                                                                                                                            |
+// 12:25h
