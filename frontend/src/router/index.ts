@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import('../views/CreateProject.vue')
     },
     {
+      path: '/project',
+      name: 'emptyProject',
+      redirect: '/dashboard',
+    },
+    {
       path: '/project/:projectName',
       name: 'project',
       props: true,
