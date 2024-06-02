@@ -65,9 +65,10 @@ class Project {
                 .catch(() => mkdir(dir))
         }
 
+        await createDirIfNotExists(`${newProject.path}`)
         await createDirIfNotExists(`${newProject.framePath}`)
         await createDirIfNotExists(`${newProject.thumbnailPath}`)
-        await createDirIfNotExists(`${newProject.out}`)
+        await createDirIfNotExists(`${newProject.outPath}`)
 
         return newProject
     }
