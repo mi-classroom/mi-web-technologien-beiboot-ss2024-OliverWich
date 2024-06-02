@@ -11,10 +11,10 @@ const route = useRoute()
 
 <template>
   <RouterView/>
-  <nav class="absolute w-screen z-auto" v-if="route.name !== 'home'">
+  <nav class="absolute left-0" v-if="route.name !== 'home'">
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger @click="router.go(-1)" class="float-left ml-2 p-2 rounded-full border border-secondary-foreground bg-secondary">
+        <TooltipTrigger @click="router.go(-1)" class="z-auto float-left ml-2 p-2 rounded-full border border-secondary-foreground bg-secondary">
           <Icon icon="bi:arrow-left" class="text-xl"/>
         </TooltipTrigger>
         <TooltipContent class="bg-transparent bg-secondary">
