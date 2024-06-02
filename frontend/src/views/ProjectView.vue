@@ -41,7 +41,7 @@ function setApi(val: CarouselApi) {
 
 // Slider
 const slider = ref<InstanceType<typeof VueSlider>>()
-const selections = ref([0, 0])
+const selections = ref<Array<number>>([])
 
 watchOnce(projectInfo, (info) => {
   selections.value = [0, Number(info.frame_count)]
