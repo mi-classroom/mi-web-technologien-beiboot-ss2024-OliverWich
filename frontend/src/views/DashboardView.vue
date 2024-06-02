@@ -25,14 +25,16 @@ getProjects().then((data) => {
           </CardContent>
         </Card>
       </router-link>
-      <Card class="border-dashed cursor-pointer">
-        <CardHeader>
-          <CardTitle class="text-center">Add a project</CardTitle>
-        </CardHeader>
-        <CardContent class="flex justify-center">
-          <Icon icon="bi:plus-circle" class="text-3xl"/>
-        </CardContent>
-      </Card>
+      <router-link to="/create">
+        <Card class="border-dashed cursor-pointer">
+          <CardHeader>
+            <CardTitle class="text-center">Add a project</CardTitle>
+          </CardHeader>
+          <CardContent class="flex justify-center">
+            <Icon icon="bi:plus-circle" class="text-3xl"/>
+          </CardContent>
+        </Card>
+      </router-link>
     </div>
   </main>
 </template>
