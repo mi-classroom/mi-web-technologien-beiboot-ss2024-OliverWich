@@ -10,8 +10,7 @@ export abstract class UploadService {
         await project.saveSourceFile(file)
 
         response.status = 201
-        const message = `File "${file.name}" uploaded successfully.`
-        console.info(message)
-        return message
+        console.info(`File "${file.name}" uploaded successfully. Project "${project.name}" created.`)
+        return project.name
     }
 }
