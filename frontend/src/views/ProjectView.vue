@@ -2,7 +2,7 @@
 import {Carousel, type CarouselApi, CarouselContent, CarouselItem,} from '@/components/ui/carousel'
 import {Separator} from '@/components/ui/separator'
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select'
-import {capitalize, ref, watch} from "vue"
+import {capitalize, ref, watch, watchEffect} from "vue"
 import {get, set, watchOnce} from "@vueuse/core"
 import {exposeProject, getProjectInfo} from "@/api"
 
@@ -30,6 +30,7 @@ getProjectInfo(props.projectName).then((data) => {
   projectInfo.value = data
 })
 
+const frameInterval = ref(1)
 
 // Carousel
 const carouselApi = ref<CarouselApi>()
@@ -56,12 +57,23 @@ function addSelectionPoint(index: number) {
 watch(selections, (n, o) => {
   const movedIndex = n.filter(x => !o.includes(x))[0]
 
-  console.log(movedIndex)
+  const newFrameIndex = convertRawFrameIndexToCarouselFrameIndex(movedIndex, get(frameInterval))
 
-  if ((movedIndex !== 0 && !movedIndex) || Number.isNaN(movedIndex)) return
+  if ((newFrameIndex !== 0 && !newFrameIndex) || Number.isNaN(newFrameIndex)) return
 
-  carouselApi.value?.scrollTo(movedIndex)
+  carouselApi.value?.scrollTo(newFrameIndex)
 })
+
+function convertRawFrameIndexToCarouselFrameIndex(frameIndex: number, frameInterval: number): number | null {
+  // Check if the original index is one of the indices we care about, considering 1-based indexing
+  if (frameIndex === 1 || (frameIndex - 1) % frameInterval === 0) {
+    // Calculate the new index in the sequence of items we care about
+    return Math.floor((frameIndex - 1) / frameInterval) + 1;
+  } else {
+    // If the original index is not in the sequence we care about, return null
+    return null;
+  }
+}
 
 function rawValuesToSelectionArrays(values: Array<number>) {
   const selections = []
@@ -125,6 +137,17 @@ const form = useForm({
   validationSchema: formSchema,
 })
 
+// Calculate frame interval based on the selected FPS
+watchEffect(() => {
+  if (!form.values?.fps) return
+
+  const newFrameInterval = Number(get(projectInfo, 'fps')) / (form.values?.fps ?? Number(get(projectInfo, 'fps')))
+
+  if (!newFrameInterval || !Number.isFinite(newFrameInterval)) return
+
+  set(frameInterval, newFrameInterval)
+})
+
 const loading = ref(false)
 const buttonText = ref('Expose!')
 const buttonIcon = ref('mdi:blur')
@@ -175,16 +198,20 @@ const onSubmit = form.handleSubmit(async (values) => {
         @init-api="setApi"
     >
       <CarouselContent>
-        <CarouselItem v-for="(_, index) in projectInfo.frame_count ?? 0" :key="index" :data-frame="index"
-                      class="pl-0 lg:basis-1/6 max-h-60">
-          <img
-              v-lazy="`/api/project/${projectName}/frame/${index}/thumbnail`"
-              :alt="`frame ${index} of the '${projectName}' project`"
-              class="h-full object-cover border-accent"
-              :class="{ 'border-2' : frameIsInSelection(index),  'rounded-sm' : !frameIsInSelection(index) }"
-              @click="addSelectionPoint(index)"
-          />
-        </CarouselItem>
+        <template v-for="(_, index) in projectInfo.frame_count ?? 0" :key="index">
+          <CarouselItem
+              v-if="index % frameInterval === 0"
+              :data-frame="index"
+              class="pl-0 lg:basis-1/6 max-h-60">
+            <img
+                v-lazy="`/api/project/${projectName}/frame/${index}/thumbnail`"
+                :alt="`frame ${index} of the '${projectName}' project`"
+                class="h-full object-cover border-accent"
+                :class="{ 'border-2' : frameIsInSelection(index),  'rounded-sm' : !frameIsInSelection(index) }"
+                @click="addSelectionPoint(index)"
+            />
+          </CarouselItem>
+        </template>
       </CarouselContent>
     </Carousel>
     <vue-slider
@@ -246,7 +273,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       </Button>
     </form>
 
-    <template  v-if="outputImage">
+    <template v-if="outputImage">
       <div class="mt-6">
         <h2 class="mb-6 text-2xl font-bold">Output:</h2>
         <img :src="outputImage" alt="Exposed project image" class="w-full"/>

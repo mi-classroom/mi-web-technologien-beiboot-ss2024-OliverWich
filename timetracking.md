@@ -28,4 +28,5 @@
 | 1h      | Frame carousel with thumbnails                                                                                                                                                               |
 | 1,5h    | Optimize thumbnail generation                                                                                                                                                                |
 | 2h      | Selection slider                                                                                                                                                                             |
-| 1h      | Upload / create new project via the frontend                                                                                                                                                        |
+| 1h      | Upload / create new project via the frontend                                                                                                                                                 |
+| 1,5h    | Render via frontend                                                                                                                                                                          |
