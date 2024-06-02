@@ -262,7 +262,7 @@ const onSubmit = form.handleSubmit(async (values) => {
     ></vue-slider>
 
     <Separator class="my-4"/>
-    <h2 class="mb-6 text-2xl font-bold">Exposure settings:</h2>
+    <h2 class="mb-6 text-2xl font-bold">Settings:</h2>
 
     <form @submit="onSubmit" class="flex flex-col justify-center align-mid">
       <FormField name="mode" v-slot="{ componentField }">
