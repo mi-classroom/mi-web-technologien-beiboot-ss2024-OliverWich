@@ -7,9 +7,13 @@ import {staticPlugin} from "@elysiajs/static"
  * **It causes all not defined routes to be redirected to the index.html of it!**
  */
 export const frontend = new Elysia()
-    .onError(({ code, error }) => {
-        if (code === 'NOT_FOUND')
-            return Bun.file('./frontend/dist/index.html')
+    .onError(async ({ code, error }) => {
+        if (code === 'NOT_FOUND') {
+            const indexFile = Bun.file('./frontend/dist/index.html')
+
+            if (await indexFile.exists()) return indexFile
+            return "Still building..."
+        }
         else {
             console.error(error)
             return error
