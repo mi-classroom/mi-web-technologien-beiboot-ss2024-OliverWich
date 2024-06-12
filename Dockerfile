@@ -1,4 +1,4 @@
-FROM oven/bun as build
+FROM oven/bun as frontend-build
 
 WORKDIR /app
 
@@ -7,7 +7,6 @@ COPY bun.lockb .
 
 RUN bun install
 
-COPY backend backend
 COPY frontend frontend
 COPY tsconfig.json .
 
@@ -19,11 +18,14 @@ WORKDIR /app
 
 COPY package.json  .
 
-COPY --from=build /app/backend backend
-COPY --from=build /app/frontend/dist frontend/dist
-COPY --from=build /app/frontend/index.ts frontend/index.ts
+COPY backend backend
+COPY --from=frontend-build /app/frontend/dist frontend/dist
+COPY --from=frontend-build /app/frontend/index.ts frontend/index.ts
+COPY --from=frontend-build /app/bun.lockb bun.lockb
 
 RUN bun install --production
+
+VOLUME /app/projects
 
 ENV NODE_ENV production
 CMD ["bun", "backend/index.ts"]

@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "bun run frontend:build && bun backend/index.ts",
     "serve": "bun --bun --filter '*' dev",
     "dev": "bun run --watch backend/index.ts",
-    "frontend:build": "vite build frontend",
+    "frontend:build": "cd frontend && bun run build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },

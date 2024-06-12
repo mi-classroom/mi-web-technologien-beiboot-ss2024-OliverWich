@@ -19,7 +19,21 @@ Halten Sie die Anwendung, gerade in der Anfangsphase möglichst einfach, schlank
 
 See [/adr](adr) for more details.
 
-## Development
+## Usage
+To run the project you need to have [Bun](https://bun.sh/) installed.
+
+### Installation
+```bash
+bun install
+```
+
+### Running the project 
+```bash
+bun start
+```
+This will build the frontend and startup the server which will be available on http://localhost:3000.
+
+### Development
 To start the development server run:
 ```bash
 bun serve
