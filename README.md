@@ -22,6 +22,13 @@ See [/adr](adr) for more details.
 ## Usage
 To run the project you need to have [Bun](https://bun.sh/) installed.
 
+There is a (slow) version available if you do not want to run it locally! See the website field and use:
+> webtech
+>
+> 2024
+
+to get in.
+
 ### Installation
 ```bash
 bun install
