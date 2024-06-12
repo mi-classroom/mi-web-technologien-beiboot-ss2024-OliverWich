@@ -167,29 +167,25 @@ export abstract class ProjectService {
     static async getThumbnailForFrame (projectName: string, frameNumber: number, response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
+        const thumbnailPath = `${project.thumbnailPath}/${(await project.getFrameNameByNumber(frameNumber)).slice(0, -3)}webp`
+
         // if thumbnail already exists, return it
-        const thumbnailNames = await readdir(project.thumbnailPath)
-        const thumbnailPath = `${project.thumbnailPath}/${thumbnailNames[frameNumber]}`
         try {
             await access(thumbnailPath)
             return Bun.file(thumbnailPath)
-        } catch (error) {
-            console.info(`No thumbnail found for frame ${frameNumber} of project "${projectName}"`)
+        } catch (_) {
+            console.info(`Creating new thumbnail for frame ${frameNumber} of project "${projectName}"`)
         }
 
-        console.info(`Creating thumbnail for frame ${frameNumber} of project "${projectName}"`)
-
         const frame = await project.getFrameByNumber(frameNumber)
-
-        const thumbPath = `${project.thumbnailPath}/${(await project.getFrameNameByNumber(frameNumber)).slice(0, -3)}webp`
 
         await sharp(frame.name)
             .resize({ height: 360 })
             .toFormat('webp')
-            .toFile(thumbPath)
+            .toFile(thumbnailPath)
 
         response.status = 200
-        return Bun.file(thumbPath)
+        return Bun.file(thumbnailPath)
     }
 
     static async getProjectThumbnail (projectName: string, response: Context["set"]) {
@@ -216,15 +212,13 @@ export abstract class ProjectService {
             return errorString
         }
 
-        const thumbPath = `${project.outPath}/thumbnail.webp`
-
         await sharp(frames[0].name)
             .resize({ height: 360 })
             .toFormat('webp')
-            .toFile(thumbPath)
+            .toFile(thumbnailPath)
 
         response.status = 200
-        return Bun.file(thumbPath)
+        return Bun.file(thumbnailPath)
     }
 
     private static async runFfprobe(fileName: string): Promise<FfprobeData> {
