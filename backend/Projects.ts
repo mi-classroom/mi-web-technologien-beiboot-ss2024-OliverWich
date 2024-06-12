@@ -29,7 +29,6 @@ class Project {
     thumbnailPath: string
     outPath: string
     sourceFile: BunFile
-    // TODO: store this in a config file per project
     fps: number = 30
 
     private constructor(name: string, path: string, sourceFile: BunFile) {
