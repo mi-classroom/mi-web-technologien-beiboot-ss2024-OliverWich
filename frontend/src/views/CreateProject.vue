@@ -55,6 +55,16 @@ function handleFileSelect(value: FileList | null) {
 }
 
 const onSubmit = form.handleSubmit(async (values) => {
+  try {
+    await createAndPreprocessProject(values)
+  } catch (e) {
+    set(buttonText, 'Something went wrong!')
+    set(buttonIcon, 'mdi:alert')
+    set(loading, false)
+  }
+})
+
+async function createAndPreprocessProject(values: {file: File}) {
   if (get(projectCreated)) {
     await router.push({name: 'project', params: {projectName: get(createdProjectName)}})
     return
@@ -76,7 +86,7 @@ const onSubmit = form.handleSubmit(async (values) => {
   set(projectCreated, true)
   set(buttonText, 'Project created! Go and start exposing!')
   set(buttonIcon, 'mdi:check')
-})
+}
 
 </script>
 
