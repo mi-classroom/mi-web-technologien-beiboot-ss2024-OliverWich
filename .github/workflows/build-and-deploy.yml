@@ -1,4 +1,4 @@
-name: Create and publish a Docker image
+name: Build Docker image and redeploy
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
@@ -49,3 +49,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+      - name: Trigger redeploy
+        uses: distributhor/workflow-webhook@v3
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
