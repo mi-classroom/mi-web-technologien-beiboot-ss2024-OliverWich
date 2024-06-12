@@ -21,7 +21,6 @@ function getFileNameWithoutExtension(fileName: string) {
     return fileName.substring(0, fileName.lastIndexOf("."))
 }
 
-// TODO: Only do readdir on the frames (and maybe on the others as well) once on create to save IO. e.g. getting one Frame always ready the entire folder but that result is constant since this is done in the preprocessing
 class Project {
     name: string
     path: string
@@ -29,7 +28,6 @@ class Project {
     thumbnailPath: string
     outPath: string
     sourceFile: BunFile
-    // TODO: store this in a config file per project
     fps: number = 30
 
     private constructor(name: string, path: string, sourceFile: BunFile) {
