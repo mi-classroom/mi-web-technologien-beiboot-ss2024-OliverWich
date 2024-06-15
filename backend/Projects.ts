@@ -1,7 +1,7 @@
 import {access, mkdir, readdir} from "node:fs/promises"
 import {BunFile} from "bun"
 
-const projectsPath = "./projects"
+const projectsPath = `${import.meta.dir}/../projects`
 
 export async function getProjectForFileName(fileName: string): Promise<Project> {
     const projectName = getFileNameWithoutExtension(fileName)
