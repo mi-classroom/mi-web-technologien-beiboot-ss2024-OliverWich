@@ -9,7 +9,7 @@ import {staticPlugin} from "@elysiajs/static"
 export const frontend = new Elysia()
     .onError(async ({ code, error }) => {
         if (code === 'NOT_FOUND') {
-            const indexFile = Bun.file('./frontend/dist/index.html')
+            const indexFile = Bun.file(`${import.meta.dir}/dist/index.html`)
 
             if (await indexFile.exists()) return indexFile
             return "Still building..."
@@ -20,6 +20,6 @@ export const frontend = new Elysia()
         }
     })
     .use(staticPlugin({
-        assets: './frontend/dist/',
+        assets: `${import.meta.dir}/dist/`,
         prefix: '/',
     }))
