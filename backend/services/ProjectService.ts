@@ -41,7 +41,6 @@ export abstract class ProjectService {
                         console.info(`Finished processing file ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
                         resolve()
                     })
-                    .run()
             } catch (error) {
                 reject(error)
             }
