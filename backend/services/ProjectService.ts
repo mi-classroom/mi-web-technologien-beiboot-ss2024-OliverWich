@@ -4,7 +4,7 @@ import {getProjectForName} from "../Projects"
 import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
 import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
-import {access, readdir} from "node:fs/promises"
+import {access} from "node:fs/promises"
 import sharp from "sharp"
 
 ffmpeg.setFfmpegPath(<string>ffmpegPath)
@@ -23,12 +23,12 @@ export abstract class ProjectService {
         }
 
         // Extract frames from the video
-        await this.runFfmpeg(project.sourceFile.name, project.fps, project.framePath, options?.resolution)
+        await this.runFfmpeg(project.sourceFile.name, project.fps, project.framePath, options?.resolution, project.frameFileType)
 
         response.status = 204
     }
 
-    private static async runFfmpeg (targetFilePath: string, fps: number, targetFolder: string, resolution: number = 720): Promise<void> {
+    private static async runFfmpeg (targetFilePath: string, fps: number, targetFolder: string, resolution: number = 720, frameFileType = 'png'): Promise<void> {
         return new Promise((resolve, reject) => {
             try {
                 console.info(`Starting to extract frames from ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
@@ -36,7 +36,7 @@ export abstract class ProjectService {
                 ffmpeg(targetFilePath)
                     .outputOptions('-vf',`scale=-2:${resolution}`)
                     .fps(fps)
-                    .saveToFile(`${targetFolder}/%3d.png`)
+                    .saveToFile(`${targetFolder}/%3d.${frameFileType}`)
                     .on('end', function() {
                         console.info(`Finished processing file ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
                         resolve()
@@ -144,14 +144,12 @@ export abstract class ProjectService {
             return errorString
         }
 
-        const frameCount = await readdir(project.framePath).then(files => files.length)
-
         response.status = 200
         return {
             name: project.name,
             fps: project.fps,
             duration: metaData.format.duration,
-            frame_count: frameCount
+            frame_count: project.frameCount
         }
     }
 
