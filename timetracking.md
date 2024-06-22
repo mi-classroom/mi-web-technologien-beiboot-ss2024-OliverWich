@@ -32,4 +32,11 @@
 | 1,5h    | Render via frontend (includes respecting fps option in the carousel and slider/ slice selection mechanism)                                                                                   |
 | 0,5h    | Scrubber                                                                                                                                                                                     |
 | 0,5h    | Cleanup and small UI improvements                                                                                                                                                            |
-// 12:25h
+// 12:15h
+
+
+## Issue 3: Schlüsselbilder
+
+| Stunden | Beschreibung                                                          |
+|---------|-----------------------------------------------------------------------|
+| 0.5h    | Refactor und Optimieren von Frame Namen. Auch optimieren von IO davon |
