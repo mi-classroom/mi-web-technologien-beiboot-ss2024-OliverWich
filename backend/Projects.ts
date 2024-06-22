@@ -25,6 +25,8 @@ class Project {
     name: string
     path: string
     framePath: string
+    frameFileType: string = "png"
+    frameCount: number = 0
     thumbnailPath: string
     outPath: string
     sourceFile: BunFile
@@ -69,7 +71,13 @@ class Project {
         await createDirIfNotExists(`${newProject.thumbnailPath}`)
         await createDirIfNotExists(`${newProject.outPath}`)
 
+        await newProject.calculateFrameCount()
+
         return newProject
+    }
+
+    async calculateFrameCount() {
+        this.frameCount = (await readdir(this.framePath)).length
     }
 
     async saveSourceFile(file: File) {
@@ -80,8 +88,14 @@ class Project {
     }
 
     async getFrameNameByNumber(frameNumber: number) {
-        const frameNames = await readdir(this.framePath)
-        return frameNames[frameNumber]
+        const frameDigits = this.frameCount.toString().length
+
+        // Frames are zero indexed, but frame files start at e.g. 001
+        frameNumber++
+
+        const frameName = frameNumber.toString().padStart(frameDigits, '0')
+
+        return `${frameName}.${this.frameFileType}`
     }
 
     async getFrameByNumber(frameNumber: number): Promise<BunFile> {
