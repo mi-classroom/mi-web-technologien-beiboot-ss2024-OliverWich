@@ -51,6 +51,7 @@ jobs:
           push: true
 
       - name: Trigger redeploy
-        uses: distributhor/workflow-webhook@v3
+        uses: dkershner6/post-api-call-action@v2
         with:
-          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          url: ${{ secrets.WEBHOOK_URL }}
+      
