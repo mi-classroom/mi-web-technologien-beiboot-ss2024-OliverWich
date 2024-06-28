@@ -122,7 +122,7 @@ class Project {
     private getFramesForSlice(slice: Slice, frameNames: Array<string>, frameInterval: number): Array<BunFile> {
         const frameFiles: Array<BunFile> = []
 
-        const startIndex = slice.start * this.fps
+        const startIndex = Math.floor(slice.start * this.fps)
         if (startIndex >= frameNames.length) {
             throw new Error(`Start ${slice.start} not valid! Must be 0 < slice.start > ${frameNames.length / this.fps}`)
         }
@@ -132,7 +132,8 @@ class Project {
             throw new Error(`End ${slice.end} not valid! Must be slice.start < slice.end > ${frameNames.length / this.fps}`)
         }
 
-        for (let frameIndex = startIndex; frameIndex < endIndex; frameIndex += frameInterval) {
+        // We want to include the last frame of the slice which enables us to include a single frame by using the same start and end index
+        for (let frameIndex = startIndex; frameIndex <= endIndex; frameIndex += frameInterval) {
             frameFiles.push(Bun.file(`${this.framePath}/${frameNames[frameIndex]}`))
         }
 
