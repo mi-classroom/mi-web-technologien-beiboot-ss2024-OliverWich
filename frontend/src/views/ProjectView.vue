@@ -2,7 +2,7 @@
 import {Carousel, type CarouselApi, CarouselContent, CarouselItem,} from '@/components/ui/carousel'
 import {Separator} from '@/components/ui/separator'
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select'
-import {capitalize, ref, watch, watchEffect} from "vue"
+import {capitalize, ref, type VNode, type VueElement, watch, watchEffect} from "vue"
 import {get, set, watchOnce} from "@vueuse/core"
 import {exposeProject, getProjectInfo} from "@/api"
 
@@ -15,6 +15,7 @@ import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessag
 import {Icon} from "@iconify/vue"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip"
 
 
 const props = defineProps({
@@ -116,6 +117,18 @@ function frameIsInSelection(frameNumber: number) {
 function frameIndexToSeconds(frameIndex: number) {
   return (frameIndex / Number(get(projectInfo, 'fps'))).toFixed(3) + 's'
 }
+
+// Action buttons
+const hoveredImageIndex = ref<number | null>(null)
+
+function showActionButtonsForFrame(frameIndex: number) {
+  set(hoveredImageIndex, frameIndex)
+}
+
+function hideActionButtonsForFrame(frameIndex: number) {
+  set(hoveredImageIndex, null)
+}
+
 
 // Render form
 const renderModes = ref([
@@ -234,13 +247,34 @@ const onSubmit = form.handleSubmit(async (values) => {
           <CarouselItem
               v-if="index % frameInterval === 0"
               :data-frame="index"
-              class="pl-0 lg:basis-1/6 max-h-60">
+              class="pl-0 lg:basis-1/6 max-h-60 relative"
+              @mouseover="showActionButtonsForFrame(index)"
+              @mouseleave="hideActionButtonsForFrame(index)"
+          >
+            <Transition>
+              <span
+                  v-if="hoveredImageIndex === index"
+                  class="absolute top-0 left-0 z-10 p-2 w-full flex justify-between"
+              >
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button class="bg-accent text-secondary" @click="addSelectionPoint(index)">
+                        <Icon icon="mdi:content-cut" class="w-4 h-4 rotate-90"/>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent class="bg-transparent bg-secondary">
+                      <span class="text-secondary-foreground">Add Cut here</span>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </span>
+            </Transition>
             <img
                 v-lazy="`/api/project/${projectName}/frame/${index}/thumbnail`"
                 :alt="`frame ${index} of the '${projectName}' project`"
                 class="h-full object-cover border-accent"
                 :class="{ 'border-2' : frameIsInSelection(index),  'rounded-sm' : !frameIsInSelection(index) }"
-                @click="addSelectionPoint(index)"
             />
           </CarouselItem>
         </template>
@@ -316,3 +350,16 @@ const onSubmit = form.handleSubmit(async (values) => {
     </template>
   </main>
 </template>
+
+<style scoped>
+/* For the fade in of the action buttons Transition */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
