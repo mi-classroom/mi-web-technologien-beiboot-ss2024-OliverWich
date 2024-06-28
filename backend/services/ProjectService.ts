@@ -5,7 +5,8 @@ import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
 import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
 import {access} from "node:fs/promises"
-import sharp from "sharp"
+import sharp, {Sharp} from "sharp"
+import {BunFile} from "bun"
 
 ffmpeg.setFfmpegPath(<string>ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath)
@@ -54,64 +55,9 @@ export abstract class ProjectService {
 
         console.info(`Exposing ${frames.length} frames out of ${options.slices.length} slices from Project "${project.name}" which corresponds to ${options.fps} fps with mode "${options.mode}".`)
 
-        async function writeOutFile (path: string) {
-            switch (options.mode) {
-                case 'mean': return manualMeanCalculation(path)
-                default: return useSharpCompositing(path)
-            }
-        }
-
-        async function useSharpCompositing(path: string) {
-            const sharpInputFrames = frames.map(frame => {
-                return {
-                    input: frame.name,
-                    blend: options.mode
-                }
-            })
-
-            await sharp(sharpInputFrames.pop()?.input)
-                .composite(sharpInputFrames)
-                .toFile(path)
-        }
-
-        async function manualMeanCalculation (path: string) {
-            const firstImage = sharp(frames[0].name)
-            const { width, height } = await firstImage.metadata()
-
-            if (!width || !height) {
-                throw new Error("Could not read metaData for Frames. Did you process the project first?")
-            }
-
-            // Initialize array to store pixel values for 3 channels
-            const pixelValues = Array(height * width * 3).fill(0)
-
-            // Extract pixel values from each image
-            for (let i = 0; i < frames.length; i++) {
-                const image = sharp(frames[i].name)
-                const pixels = await image.removeAlpha().raw().toBuffer()
-
-                for (let j = 0; j < pixels.length; j++) {
-                    pixelValues[j] += pixels[j]
-                }
-            }
-
-            // Calculate mean pixel values
-            const meanPixelValues = pixelValues.map(value => Math.floor(value / frames.length))
-
-            await sharp(Buffer.from(meanPixelValues), {
-                raw: {
-                    width: width,
-                    height: height,
-                    channels: 3,
-                }
-            })
-                .toFormat('png')
-                .toFile(path)
-        }
-
         const outPath = `${project.outPath}/out.png`
 
-        await writeOutFile(outPath)
+        await this.runExposure(options, frames, outPath)
 
         return Bun.file(outPath)
     }
@@ -228,6 +174,75 @@ export abstract class ProjectService {
                 resolve(metadata)
             })
         })
+    }
+
+    private static async runExposure (options: any, frameFiles: Array<BunFile>, outPath: string) {
+        switch (options.mode) {
+            case 'mean': return this.manualMeanCalculation(frameFiles, outPath)
+            default: return this.useSharpCompositing(frameFiles, outPath)
+        }
+    }
+
+    private static async useSharpCompositing(frameFiles: Array<BunFile>, outputPath: string) {
+        const sharpInputFrames = frameFiles.map(frame => {
+            return {
+                input: frame.name,
+                blend: options.mode
+            }
+        })
+
+        await sharp(sharpInputFrames.pop()?.input)
+            .composite(sharpInputFrames)
+            .toFile(outputPath)
+    }
+
+    private static async manualMeanCalculation (frameFiles: Array<BunFile>, outputPath: string) {
+        const firstImage = sharp(frameFiles[0].name)
+        const { width, height } = await firstImage.metadata()
+
+        if (!width || !height) {
+            throw new Error("Could not read metaData for Frames. Did you process the project first?")
+        }
+
+        // Initialize array to store pixel values for 3 channels
+        const pixelValues = Array(height * width * 3).fill(0)
+
+        // Extract pixel values from each image
+        for (let i = 0; i < frameFiles.length; i++) {
+            const image = sharp(frameFiles[i].name)
+
+            await this.addRGBValues(pixelValues, image)
+        }
+
+        // Calculate mean pixel values
+        const meanPixelValues = pixelValues.map(value => Math.floor(value / frameFiles.length))
+
+        await sharp(Buffer.from(meanPixelValues), {
+            raw: {
+                width: width,
+                height: height,
+                channels: 3,
+            }
+        })
+            .toFormat('png')
+            .toFile(outputPath)
+    }
+
+
+    /**
+     * Adds the pixel values of the second image to the first image wich is passed as an RGB Array
+     *
+     * This will mutate the firstImageRGBAsReference Array!
+     *
+     * @param firstImageRGBAsReference
+     * @param secondImage
+     */
+    private static async addRGBValues(firstImageRGBAsReference: Array<number>, secondImage: Sharp) {
+        const pixels = await secondImage.removeAlpha().raw().toBuffer()
+
+        for (let j = 0; j < pixels.length; j++) {
+            firstImageRGBAsReference[j] += pixels[j]
+        }
     }
 }
 
