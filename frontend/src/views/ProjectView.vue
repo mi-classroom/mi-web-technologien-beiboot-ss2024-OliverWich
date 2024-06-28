@@ -329,6 +329,50 @@ const onSubmit = form.handleSubmit(async (values) => {
         :process="rawValuesToSelectionArrays as ProcessProp"
     ></vue-slider>
 
+    <template v-if="focusFrameIndexes.length > 0">
+      <Separator class="my-4"/>
+
+      <h2 class="mb-6 text-2xl font-bold">Selected Focus Frames:</h2>
+
+      <Carousel
+          class="w-full"
+          :opts="{
+          dragFree: true,
+          align: 'start',
+        }"
+      >
+        <CarouselContent>
+          <template v-for="(focusFrame) in focusFrameIndexes" :key="index">
+            <CarouselItem
+                class="pl-0 lg:basis-1/6 max-h-60 relative"
+                :data-frame="focusFrame"
+            >
+              <span class="absolute top-0 left-0 z-10 p-2 w-full flex justify-between">
+                <TooltipProvider>
+                   <Tooltip>
+                    <TooltipTrigger>
+                      <Button class="bg-accent text-secondary" @click="toggleFocusForFrame(focusFrame)">
+                        <Icon icon="mdi:delete-outline" class="w-4 h-4 text-destructive"/>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent class="bg-transparent bg-secondary">
+                      <span class="text-secondary-foreground">Remove from focus frames</span>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </span>
+              <img
+                  :src="`/api/project/${projectName}/frame/${focusFrame}/thumbnail`"
+                  :alt="`frame ${focusFrame} of the '${projectName}' project`"
+                  class="h-full object-cover border-accent rounded-sm"
+              />
+            </CarouselItem>
+          </template>
+        </CarouselContent>
+      </Carousel>
+
+    </template>
+
     <Separator class="my-4"/>
     <h2 class="mb-6 text-2xl font-bold">Settings:</h2>
 
