@@ -37,6 +37,15 @@
 
 ## Issue 3: Schlüsselbilder
 
-| Stunden | Beschreibung                                                          |
-|---------|-----------------------------------------------------------------------|
-| 0.5h    | Refactor und Optimieren von Frame Namen. Auch optimieren von IO davon |
+| Stunden | Beschreibung                                                                                                    |
+|---------|-----------------------------------------------------------------------------------------------------------------|
+| 0.5h    | Refactor und Optimieren von Frame Namen. Auch optimieren von IO davon                                           |
+| 1h      | Kämpfen mit TypeScript Types für automatisch generierte Array Refs die ich letztendlich nicht gebraucht habe... |
+| 0.5h    | Umstellung von Frame Operations auf on Hover erscheinende Buttons in den Frames                                 |
+| 0.5h    | Fix das ein Slice auch nur einen Frame beinhalten kann                                                          |
+| 1h      | Fancy Focus Frame Auswahl im Frontend                                                                           |
+| 0.5h    | Refactoring und Bugfixing im Backend                                                                            |
+| 1h      | Weighted mean blending                                                                                          | 
+| 0.5h    | Focus frames im Backend                                                                                         |
+| 0.5h    | Focus frames Funktionalität im Frontend                                                                         |
+| 0.5h    | Fancy-Focus-Frame-Manager™️                                                                                     |
