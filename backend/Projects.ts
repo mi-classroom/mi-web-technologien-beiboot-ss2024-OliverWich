@@ -103,10 +103,10 @@ class Project {
     }
 
     /**
-     * @param fps How many frames per second equivalent to return
      * @param slices The slices to get the frames for
+     * @param fps How many frames per second equivalent to return
      */
-    async getFrames (fps: number = this.fps, slices: Array<Slice>): Promise<Array<BunFile>> {
+    async getFrames(slices: Array<Slice>, fps: number = this.fps): Promise<Array<BunFile>> {
         const frameNames = await readdir(this.framePath)
         const frameFiles: Array<BunFile> = []
 
@@ -124,17 +124,21 @@ class Project {
 
         const startIndex = Math.floor(slice.start * this.fps)
         if (startIndex >= frameNames.length) {
-            throw new Error(`Start ${slice.start} not valid! Must be 0 < slice.start > ${frameNames.length / this.fps}`)
+            throw new Error(`Start ${slice.start} not valid! Must be 0 < slice.start < ${frameNames.length / this.fps}`)
         }
 
-        const endIndex = slice.end === -1 ? frameNames.length : slice.end * this.fps
+        const endIndex = slice.end === -1 ? frameNames.length : Math.floor(slice.end * this.fps)
+
         if (endIndex < 0 || endIndex > frameNames.length || endIndex < startIndex) {
-            throw new Error(`End ${slice.end} not valid! Must be slice.start < slice.end > ${frameNames.length / this.fps}`)
+            throw new Error(`End ${slice.end} not valid! Must be slice.start < slice.end < ${frameNames.length / this.fps}`)
         }
 
-        // We want to include the last frame of the slice which enables us to include a single frame by using the same start and end index
-        for (let frameIndex = startIndex; frameIndex <= endIndex; frameIndex += frameInterval) {
-            frameFiles.push(Bun.file(`${this.framePath}/${frameNames[frameIndex]}`))
+        // If start and end are the same, this slice consists of just this one image
+        if (startIndex === endIndex)
+            return [this.getFrameByNumber(startIndex)]
+
+        for (let frameIndex = startIndex; frameIndex < endIndex; frameIndex += frameInterval) {
+            frameFiles.push(this.getFrameByNumber(frameIndex))
         }
 
         return frameFiles

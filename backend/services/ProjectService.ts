@@ -50,7 +50,7 @@ export abstract class ProjectService {
     static async expose (projectName: string, options: any, _response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
-        const frames = await project.getFrames(options.fps, options.slices)
+        const frames = await project.getFrames(options.slices, options.fps)
 
         console.info(`Exposing ${frames.length} frames out of ${options.slices.length} slices from Project "${project.name}" which corresponds to ${options.fps} fps with mode "${options.mode}".`)
 
