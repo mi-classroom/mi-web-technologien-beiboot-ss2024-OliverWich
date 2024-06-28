@@ -73,7 +73,14 @@ export const backend = new Elysia({ prefix: '/api' })
                     t.Object({
                         start: t.Number({default: 0}),
                         end: t.Number({default: -1}),
-                    })))
+                    }))),
+                focus: t.Optional(t.Object({
+                        opacity: t.Optional(t.Number({default: 0.5})),
+                        overlayMode: t.Optional(t.String({default: 'mean'})),
+                        blendMode: t.Optional(t.String({default: 'mean'})),
+                        frameTimestamps: t.Array(t.Number({default: 1}))
+                    }
+                )),
             }),
         })
     })
