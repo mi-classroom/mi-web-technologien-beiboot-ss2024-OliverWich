@@ -43,7 +43,7 @@ function setApi(val: CarouselApi) {
 // Slider
 const slider = ref<InstanceType<typeof VueSlider>>()
 const selections = ref<Array<number>>([])
-const focussedFrame = ref<number>(0)
+const activeFrame = ref<number>(0)
 
 watchOnce(projectInfo, (info) => {
   selections.value = [0, Number(info.frame_count)]
@@ -62,7 +62,7 @@ watch(selections, (n, o) => {
   scrollCarouselToFrameIndex(movedIndex)
 })
 
-watch(focussedFrame, (n, o) => {
+watch(activeFrame, (n, o) => {
   if (n === o) return
 
   scrollCarouselToFrameIndex(n, false)
@@ -74,7 +74,7 @@ function scrollCarouselToFrameIndex(frameIndex: number, updateActiveFrame = true
   if ((newFrameIndex !== 0 && !newFrameIndex) || Number.isNaN(newFrameIndex)) return
 
   if (updateActiveFrame) {
-    set(focussedFrame, frameIndex)
+    set(activeFrame, frameIndex)
   }
 
   carouselApi.value?.scrollTo(newFrameIndex)
@@ -129,6 +129,16 @@ function hideActionButtonsForFrame(frameIndex: number) {
   set(hoveredImageIndex, null)
 }
 
+// Focus frames
+const focusFrameIndexes = ref<Array<number>>([])
+
+const toggleFocusForFrame = (frameIndex: number) => {
+  if (focusFrameIndexes.value.includes(frameIndex)) {
+    set(focusFrameIndexes, get(focusFrameIndexes).filter((index) => index !== frameIndex))
+  } else {
+    focusFrameIndexes.value.push(frameIndex)
+  }
+}
 
 // Render form
 const renderModes = ref([
@@ -163,6 +173,9 @@ const renderModes = ref([
 const formSchema = toTypedSchema(z.object({
   mode: z.string().default('mean'),
   fps: z.number().min(1).max(30).default(30),
+  focusOpacity: z.number().min(0).max(1).default(0.5),
+  focusOverlayMode: z.string().default('mean'),
+  focusBlendMode: z.string().default('mean'),
 }))
 
 const form = useForm({
@@ -201,7 +214,14 @@ const onSubmit = form.handleSubmit(async (values) => {
     slices: selectedSections.map(([start, end]) => ({start: start / projectFPS, end: end / projectFPS})),
   }
 
-  console.log(requestBody)
+  if (get(focusFrameIndexes).length > 0) {
+    requestBody.focus = {
+      opacity: values.focusOpacity,
+      mode: values.focusOverlayMode,
+      blend: values.focusBlendMode,
+      frameTimestamps: get(focusFrameIndexes).map((index) => index / projectFPS),
+    }
+  }
 
   const exposedImageBlob = await exposeProject(props.projectName, requestBody).catch((e) => {
     console.error(e)
@@ -225,7 +245,7 @@ const onSubmit = form.handleSubmit(async (values) => {
     <vue-slider
         ref="scrubber"
         v-if="projectInfo.frame_count"
-        v-model="focussedFrame"
+        v-model="activeFrame"
         :max="Number(projectInfo.frame_count)"
         :duration="0"
         :drag-on-click="true"
@@ -267,6 +287,17 @@ const onSubmit = form.handleSubmit(async (values) => {
                       <span class="text-secondary-foreground">Add Cut here</span>
                     </TooltipContent>
                   </Tooltip>
+
+                   <Tooltip>
+                    <TooltipTrigger>
+                      <Button class="bg-accent text-secondary" @click="toggleFocusForFrame(index)">
+                        <Icon icon="mdi:star" class="w-4 h-4" :class="{ 'text-gold': focusFrameIndexes.includes(index)}"/>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent class="bg-transparent bg-secondary">
+                      <span class="text-secondary-foreground">Add as focus frame</span>
+                    </TooltipContent>
+                  </Tooltip>
                 </TooltipProvider>
               </span>
             </Transition>
@@ -276,6 +307,9 @@ const onSubmit = form.handleSubmit(async (values) => {
                 class="h-full object-cover border-accent"
                 :class="{ 'border-2' : frameIsInSelection(index),  'rounded-sm' : !frameIsInSelection(index) }"
             />
+            <Transition name="rotate">
+              <Icon v-if="focusFrameIndexes.includes(index)" icon="mdi:star" class="absolute right-2 bottom-2 w-4 h-4 text-gold"/>
+            </Transition>
           </CarouselItem>
         </template>
       </CarouselContent>
@@ -310,7 +344,7 @@ const onSubmit = form.handleSubmit(async (values) => {
           <Select v-bind="componentField">
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Select a verified email to display"/>
+                <SelectValue placeholder="Select a blend mode to use"/>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
@@ -336,6 +370,72 @@ const onSubmit = form.handleSubmit(async (values) => {
           <FormMessage/>
         </FormItem>
       </FormField>
+
+      <FormField name="focusOpacity" v-slot="{ componentField }">
+        <FormItem class="grid grid-cols-[1fr_2fr]">
+          <FormLabel class="flex justify-center flex-col justify-start">
+            <span>Focus opacity</span>
+            <FormDescription>
+              The opacity of the focus frames when they are overlayed on the exposed image.
+            </FormDescription>
+          </FormLabel>
+          <Input v-bind="componentField" type="number" step=".01"/>
+          <FormMessage/>
+        </FormItem>
+      </FormField>
+
+      <FormField name="focusOverlayMode" v-slot="{ componentField }">
+        <FormItem class="grid grid-cols-[1fr_2fr]">
+          <FormLabel class="flex justify-center flex-col justify-start">
+            <span>Focus overlay mode</span>
+            <FormDescription>
+              The blend mode to use when overlaying the focus frames on the exposed image.
+            </FormDescription>
+          </FormLabel>
+          <Select v-bind="componentField">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a blend mode to use"/>
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem v-for="mode in renderModes" :value="mode">
+                  {{ capitalize(mode) }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FormMessage/>
+        </FormItem>
+      </FormField>
+
+      <FormField name="focusBlendMode" v-slot="{ componentField }">
+        <FormItem class="grid grid-cols-[1fr_2fr]">
+          <FormLabel class="flex justify-center flex-col justify-start">
+            <span>Focus blend mode</span>
+            <FormDescription>
+              The blend mode to use when blending the focus frames together.
+            </FormDescription>
+          </FormLabel>
+          <Select v-bind="componentField">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a blend mode to use"/>
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem v-for="mode in renderModes" :value="mode">
+                  {{ capitalize(mode) }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FormMessage/>
+        </FormItem>
+      </FormField>
+
       <Button type="submit" class="mt-3" :disabled="loading">
         <Icon :icon="buttonIcon" class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading}"/>
         {{ buttonText }}
@@ -361,5 +461,25 @@ const onSubmit = form.handleSubmit(async (values) => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+/* This is the animation for the star icon when marking a frame as focussed */
+@keyframes rotate {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.rotate-enter-active {
+  animation: rotate 0.2s;
+}
+
+.rotate-leave-active {
+  animation: rotate 0.2s reverse;
 }
 </style>

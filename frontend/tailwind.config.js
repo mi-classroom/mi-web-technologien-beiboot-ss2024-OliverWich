@@ -5,14 +5,14 @@ module.exports = {
   darkMode: ["class"],
   safelist: ["dark"],
   prefix: "",
-  
+
   content: [
     './pages/**/*.{ts,tsx,vue}',
     './components/**/*.{ts,tsx,vue}',
     './app/**/*.{ts,tsx,vue}',
     './src/**/*.{ts,tsx,vue}',
 	],
-  
+
   theme: {
     container: {
       center: true,
@@ -56,6 +56,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        gold: "hsl(50, 100%, 48%)"
       },
       borderRadius: {
       	xl: "calc(var(--radius) + 4px)",
@@ -87,6 +88,14 @@ module.exports = {
         "collapsible-down": "collapsible-down 0.2s ease-in-out",
         "collapsible-up": "collapsible-up 0.2s ease-in-out",
       },
+      dropShadow: {
+        'white-center': [
+          '1px 0 0 white',
+          '-1px 0 0 white',
+          '0 1px 0 white',
+          '0 -1px 0 white',
+        ]
+      }
     },
   },
   plugins: [animate],
