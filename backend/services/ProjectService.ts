@@ -179,15 +179,15 @@ export abstract class ProjectService {
     private static async runExposure (options: any, frameFiles: Array<BunFile>, outPath: string) {
         switch (options.mode) {
             case 'mean': return this.manualMeanCalculation(frameFiles, outPath)
-            default: return this.useSharpCompositing(frameFiles, outPath)
+            default: return this.useSharpCompositing(options.mode, frameFiles, outPath)
         }
     }
 
-    private static async useSharpCompositing(frameFiles: Array<BunFile>, outputPath: string) {
+    private static async useSharpCompositing(mode: string, frameFiles: Array<BunFile>, outputPath: string) {
         const sharpInputFrames = frameFiles.map(frame => {
             return {
                 input: frame.name,
-                blend: options.mode
+                blend: mode
             }
         })
 
