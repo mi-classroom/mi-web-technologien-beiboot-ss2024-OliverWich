@@ -59,6 +59,12 @@ export abstract class ProjectService {
 
         await this.runExposure(options, frames, outPath)
 
+        if (options.focus && options.focus.frameTimestamps.length) {
+            console.info(`Overlaying focus frames with timestamps [${options.focus.frameTimestamps}] to image...`)
+
+            await this.applyFocusFrames(project, options.focus, outPath)
+        }
+
         return Bun.file(outPath)
     }
 
@@ -174,6 +180,40 @@ export abstract class ProjectService {
                 resolve(metadata)
             })
         })
+    }
+
+    private static async applyFocusFrames (project: Project, focusOptions: any, outPath: string) {
+        // Create fake slices for the focus frames that only contain one frame
+        const focusSlices = focusOptions.frameTimestamps.map((timeStamp) => {
+            return {
+                start: timeStamp,
+                end: timeStamp,
+            }
+        })
+
+        // Merge focus frames into one
+        const focusFrames = await project.getFrames(focusSlices)
+        const focusMergedRawPath = `${project.outPath}/outFocus-Raw.png`
+        console.info(`Exposing ${focusFrames.length} focus frames with mode "${focusOptions.blendMode ?? 'mean'}"...`)
+        await this.runExposure({mode: focusOptions.blendMode ?? 'mean'}, focusFrames, focusMergedRawPath)
+
+        // Copy outPath to outBeforeFocus.png because we cannot run sharp on the same file later
+        const outBeforeFocusPath = `${project.outPath}/outBeforeFocus.png`
+        await Bun.write(outBeforeFocusPath, Bun.file(outPath))
+
+        // Make focus Frame semi-transparent
+        const focusPath = `${project.outPath}/outFocus.png`
+        console.info(`Applying opacity ${focusOptions.opacity ?? 0.5} to merged focus frames...`)
+        await sharp(focusMergedRawPath)
+            .ensureAlpha(focusOptions.opacity ?? 0.5)
+            .toFile(focusPath)
+
+        // Overlay focus frames
+        console.info(`Overlaying merged focus frames with mode "${focusOptions.overlayMode ?? 'mean'}"...`)
+        await this.runExposure({mode: focusOptions.overlayMode ?? 'mean'}, [
+            Bun.file(outBeforeFocusPath),
+            Bun.file(focusPath)
+        ], outPath)
     }
 
     private static async runExposure (options: any, frameFiles: Array<BunFile>, outPath: string) {
