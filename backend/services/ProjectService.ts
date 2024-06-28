@@ -207,15 +207,37 @@ export abstract class ProjectService {
         // Initialize array to store pixel values for 3 channels
         const pixelValues = Array(height * width * 3).fill(0)
 
+        // Initialize total weight. This will be the factor we divide the pixel values by to get the (weighted based on alpha) mean
+        let totalWeight = 0
+
         // Extract pixel values from each image
         for (let i = 0; i < frameFiles.length; i++) {
             const image = sharp(frameFiles[i].name)
 
-            await this.addRGBValues(pixelValues, image)
+            let alphaWeight = 1
+
+            const hasAlpha = (await image.metadata()).hasAlpha
+
+            if (hasAlpha) {
+                // Retrieve alpha channel mean value
+                const imageStats = await image.stats()
+                const meanAlpha = imageStats.channels[3].mean
+
+                // Normalize alpha value to 0-1 to use it as a factor
+                alphaWeight = meanAlpha / 255
+            }
+
+            totalWeight += alphaWeight
+
+            const pixels = await image.removeAlpha().raw().toBuffer()
+
+            for (let j = 0; j < pixels.length; j++) {
+                pixelValues[j] += pixels[j] * alphaWeight
+            }
         }
 
-        // Calculate mean pixel values
-        const meanPixelValues = pixelValues.map(value => Math.floor(value / frameFiles.length))
+        // Calculate (weighted) mean pixel values
+        const meanPixelValues = pixelValues.map(value => Math.floor(value / totalWeight))
 
         await sharp(Buffer.from(meanPixelValues), {
             raw: {
@@ -226,23 +248,6 @@ export abstract class ProjectService {
         })
             .toFormat('png')
             .toFile(outputPath)
-    }
-
-
-    /**
-     * Adds the pixel values of the second image to the first image wich is passed as an RGB Array
-     *
-     * This will mutate the firstImageRGBAsReference Array!
-     *
-     * @param firstImageRGBAsReference
-     * @param secondImage
-     */
-    private static async addRGBValues(firstImageRGBAsReference: Array<number>, secondImage: Sharp) {
-        const pixels = await secondImage.removeAlpha().raw().toBuffer()
-
-        for (let j = 0; j < pixels.length; j++) {
-            firstImageRGBAsReference[j] += pixels[j]
-        }
     }
 }
 
