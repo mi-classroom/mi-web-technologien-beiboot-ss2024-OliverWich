@@ -87,7 +87,7 @@ class Project {
         this.sourceFile = Bun.file(filePath)
     }
 
-    async getFrameNameByNumber(frameNumber: number) {
+    getFrameNameByNumber(frameNumber: number) {
         const frameDigits = this.frameCount.toString().length
 
         // Frames are zero indexed, but frame files start at e.g. 001
@@ -98,8 +98,8 @@ class Project {
         return `${frameName}.${this.frameFileType}`
     }
 
-    async getFrameByNumber(frameNumber: number): Promise<BunFile> {
-        return Bun.file(`${this.framePath}/${await this.getFrameNameByNumber(frameNumber)}`)
+    getFrameByNumber(frameNumber: number): BunFile {
+        return Bun.file(`${this.framePath}/${this.getFrameNameByNumber(frameNumber)}`)
     }
 
     /**

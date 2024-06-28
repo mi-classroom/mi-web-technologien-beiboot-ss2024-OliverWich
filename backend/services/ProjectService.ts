@@ -164,7 +164,7 @@ export abstract class ProjectService {
     static async getThumbnailForFrame (projectName: string, frameNumber: number, response: Context["set"]) {
         const project = await getProjectForName(projectName)
 
-        const thumbnailPath = `${project.thumbnailPath}/${(await project.getFrameNameByNumber(frameNumber)).slice(0, -3)}webp`
+        const thumbnailPath = `${project.thumbnailPath}/${(project.getFrameNameByNumber(frameNumber)).slice(0, -3)}webp`
 
         // if thumbnail already exists, return it
         try {
@@ -174,7 +174,7 @@ export abstract class ProjectService {
             console.info(`Creating new thumbnail for frame ${frameNumber} of project "${projectName}"`)
         }
 
-        const frame = await project.getFrameByNumber(frameNumber)
+        const frame = project.getFrameByNumber(frameNumber)
 
         await sharp(frame.name)
             .resize({ height: 360 })
@@ -199,17 +199,17 @@ export abstract class ProjectService {
 
         console.info(`Creating thumbnail for project "${projectName}".`)
 
-        // We don't have a thumbnail, get a frame from the first second and use that
-        const frames = await project.getFrames(1, [{start: 0, end: 1}])
+        // We don't have a thumbnail, get the first frame and use that
+        const firstFrame = project.getFrameByNumber(0)
 
-        if (frames.length === 0) {
+        if (!await firstFrame.exists()) {
             const errorString = `Could not get any frames for project "${projectName}"`
             console.error(errorString)
             response.status = 500
             return errorString
         }
 
-        await sharp(frames[0].name)
+        await sharp(firstFrame.name)
             .resize({ height: 360 })
             .toFormat('webp')
             .toFile(thumbnailPath)
