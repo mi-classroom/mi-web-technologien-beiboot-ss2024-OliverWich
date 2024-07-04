@@ -45,7 +45,13 @@
 | 0.5h    | Fix das ein Slice auch nur einen Frame beinhalten kann                                                          |
 | 1h      | Fancy Focus Frame Auswahl im Frontend                                                                           |
 | 0.5h    | Refactoring und Bugfixing im Backend                                                                            |
-| 1h      | Weighted mean blending                                                                                          | 
+| 1h      | Weighted mean blending                                                                                          |
 | 0.5h    | Focus frames im Backend                                                                                         |
 | 0.5h    | Focus frames Funktionalität im Frontend                                                                         |
 | 0.5h    | Fancy-Focus-Frame-Manager™️                                                                                     |
+// 6:30h
+
+## Issue 4: Review Prozess & Cleanup
+| Stunden | Beschreibung             |
+|---------|--------------------------|
+| 1h      | Review Prozess erstellen |
