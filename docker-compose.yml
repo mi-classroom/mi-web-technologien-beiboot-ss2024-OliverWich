@@ -1,0 +1,14 @@
+services:
+  application:
+    image: ghcr.io/mi-classroom/mi-web-technologien-beiboot-ss2024-oliverwich
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - projects:/app/projects
+
+volumes:
+  projects:
