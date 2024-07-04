@@ -1,4 +1,4 @@
-# Still-Moving - Web Technologien 2024 Beiboot Projekt 
+# Still-Moving - Web Technologien 2024 Beiboot Projekt
 Im Projekt Still-Moving geht es darum, aus einem Video ein Bild mit Langzeitbelichtungseffekt zu erstellen.
 
 Dazu wird das Video mit in Einzelbilder zerlegt und diese Einzelbilder zu einem Bild mit Langzeitbelichtungseffekt zusammengefügt.
@@ -13,7 +13,9 @@ Dafür stehen mehrere Optionen zur Verfügung:
 ## Technologien
 [Bun](https://bun.sh/) als Runtime mit [Elysia](https://elysiajs.com/) als Framework für das Backend sowie [Vue.js](https://vuejs.org/) für das Frontend.
 
-In [/adr](adr) sind grundlegende [Architektur-Entscheidungen]((https://adr.github.io)) dokumentiert.
+In [/adr](docs/adr) sind grundlegende [Architektur-Entscheidungen](https://adr.github.io) dokumentiert.
+
+Hier ist auch eine [CONTRIBUTING](docs/CONTRIBUTING) Datei zu finden, in der Richtlinien für die Mitarbeit am Projekt festgehalten sind.
 
 ## Usage
 Die Website dieses Repos bietet eine (langsame) Version des Projekts an. Die Zugangsdaten sind:
