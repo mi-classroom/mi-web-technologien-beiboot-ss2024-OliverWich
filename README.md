@@ -1,4 +1,75 @@
-# Web Technologien // begleitendes Projekt Sommersemester 2024
+# Still-Moving - Web Technologien 2024 Beiboot Projekt
+Im Projekt Still-Moving geht es darum, aus einem Video ein Bild mit Langzeitbelichtungseffekt zu erstellen.
+
+Dazu wird das Video mit in Einzelbilder zerlegt und diese Einzelbilder zu einem Bild mit Langzeitbelichtungseffekt zusammengefügt.
+
+Dafür stehen mehrere Optionen zur Verfügung:
+- Der **Blend Mode**: Bestimmt _wie_ die Einzelbilder zusammengefügt werden.
+- Die **FPS**: Bestimmt _wie viele_ Einzelbilder pro Sekunde aus dem Video für den Prozess genutzt werden.
+- Auswahl / Schnitt des Videos: Bestimmt _welche_ Teile eines Videos in das finale Bild einfließen.
+- Die **Focus Frames** bieten die Möglichkeit, bestimmte Einzelbilder hervorzuheben welche dann über das Endbild gelegt werden.
+- Mit der **Focus Opacity** kann eingestellt werden, wie stark die Focus Frames über das Endbild gelegt werden. Die Opacity ist ein Wert zwischen 0 und 1 wo 0 bedeutet, dass die Focus Frames nicht sichtbar sind und 1 bedeutet, nur die Focus Frames sichtbar sind da sie ohne Transparenz über das finale Bild gelegt wurden.
+
+## Technologien
+[Bun](https://bun.sh/) als Runtime mit [Elysia](https://elysiajs.com/) als Framework für das Backend sowie [Vue.js](https://vuejs.org/) für das Frontend.
+
+In [/adr](docs/adr) sind grundlegende [Architektur-Entscheidungen](https://adr.github.io) dokumentiert.
+
+Hier ist auch eine [CONTRIBUTING](docs/CONTRIBUTING) Datei zu finden, in der Richtlinien für die Mitarbeit am Projekt festgehalten sind.
+
+## Usage
+Die Website dieses Repos bietet eine (langsame) Version des Projekts an. Die Zugangsdaten sind:
+> webtech
+>
+> 2024
+
+Ich empfehle jedoch die lokale Ausführung, da der Server sehr schnell in die Knie geht und nicht für eine Compute intensive Anwendung wie diese ausgelegt ist.
+
+### Docker
+Das Projekt kann ganz einfach mit Docker compose gestartet werden.
+
+Mit `docker compose up` wird das Projekt gebaut und gestartet. Der Server ist dann unter http://localhost:3000 erreichbar.
+
+Die erstellten Projekte werden in einem Volume gespeichert, sodass sie auch nach einem Neustart des Containers noch verfügbar sind.
+
+### Nativ
+Um das Projekt nativ auszuführen, muss [Bun](https://bun.sh/) installiert sein.
+
+#### Installation
+```bash
+bun install
+```
+
+#### Ausführung
+```bash
+bun start
+```
+Baut das Frontend und startet den Server welcher dann unter http://localhost:3000 verfügbar ist.
+
+### Entwicklung
+Für Hot-Reloads und Entwicklung kann das Projekt mit folgenden Befehlen gestartet werden:
+```bash
+bun serve
+```
+oder
+```bash
+bun run --filter "*" dev
+```
+
+Hierbei wird das Vue Frontend im Watch-Modus gebaut und das Backend mit Hot-Reloading gestartet damit Änderungen direkt sichtbar sind.
+
+Auch hier ist der Server unter http://localhost:3000 erreichbar.
+
+## Architektur
+> TODO
+
+- Frontend Vue, statisch gebaut und über den Root path des Servers ausgeliefert.
+- Backend Elysia, welches die API bereitstellt und die Business Logik abbildet. Die API ist unter `/api` erreichbar.
+  - *ffmpeg* als CLI Tool für das Zerlegen des Videos in Einzelbilder.
+  - *sharp* für das Bilder handling
+    - Der beste blend mode "mean" ist allerdings eine eigene implementierung eines weighted (an hand der opacity) pixel Wert mean
+
+## About
 Zum Modul Web Technologien gibt es ein begleitendes Projekt. Im Rahmen dieses Projekts werden wir von Veranstaltung zu Veranstaltung ein Projekt sukzessive weiter entwickeln und uns im Rahmen der Veranstaltung den Fortschritt anschauen, Code Reviews machen und Entwicklungsschritte vorstellen und diskutieren.
 
 Als organisatorischen Rahmen für das Projekt nutzen wir GitHub Classroom. Inhaltlich befassen wir uns mit einer Client-Server Anwendung mit deren Hilfe [Bilder mit Langzeitbelichtung](https://de.wikipedia.org/wiki/Langzeitbelichtung) sehr einfach nachgestellt werden können.
@@ -13,45 +84,3 @@ Hier ein paar ADR Beispiele aus dem letzten Semestern:
 - https://github.com/mi-classroom/mi-web-technologien-beiboot-ss2022-twobiers/tree/main/adr
 
 Halten Sie die Anwendung, gerade in der Anfangsphase möglichst einfach, schlank und leichtgewichtig (KISS).
-
-## Technologies
-[Bun](https://bun.sh/) as a runtime with [Elysia](https://elysiajs.com/) for the backend webserver and [Vue.js](https://vuejs.org/) for the frontend.
-
-See [/adr](adr) for more details.
-
-## Usage
-To run the project you need to have [Bun](https://bun.sh/) installed.
-
-There is a (slow) version available if you do not want to run it locally! See the website field and use:
-> webtech
->
-> 2024
-
-to get in.
-
-### Installation
-```bash
-bun install
-```
-
-### Running the project 
-```bash
-bun start
-```
-This will build the frontend and startup the server which will be available on http://localhost:3000.
-
-### Development
-To start the development server run:
-```bash
-bun serve
-```
-or
-```bash
-bun run --filter "*" dev
-```
-
-This will build the vue frontend in watch mode and have it be available on the root path (http://localhost:3000/).
-Routes handled by Elysia will be handled correctly, everything non-existent will route to the frontend for that router to handle.
-
-Open http://localhost:3000/ with your browser to see the result.
-
