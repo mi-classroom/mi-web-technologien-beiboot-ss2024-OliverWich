@@ -52,7 +52,8 @@
 // 6:30h
 
 ## Issue 4: Review Prozess & Cleanup
-| Stunden | Beschreibung             |
-|---------|--------------------------|
-| 1h      | Review Prozess erstellen |
-| 0.25h   | Branch Regeln            |
+| Stunden | Beschreibung                             |
+|---------|------------------------------------------|
+| 1.5h    | Aufräumen, Editor styles, Docker compose |
+| 1h      | Review Prozess und CONTRIBUTING.md       |
+| 0.25h   | Branch Regeln                            |
