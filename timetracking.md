@@ -55,3 +55,4 @@
 | Stunden | Beschreibung             |
 |---------|--------------------------|
 | 1h      | Review Prozess erstellen |
+| 0.25h   | Branch Regeln            |
