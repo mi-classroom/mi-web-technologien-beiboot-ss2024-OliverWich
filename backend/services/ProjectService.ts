@@ -5,8 +5,10 @@ import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
 import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
 import {access} from "node:fs/promises"
-import sharp, {Sharp} from "sharp"
+import sharp, {OverlayOptions} from "sharp"
 import {BunFile} from "bun"
+
+import type {Project} from "../Projects"
 
 ffmpeg.setFfmpegPath(<string>ffmpegPath)
 ffmpeg.setFfprobePath(ffprobePath)
@@ -184,7 +186,7 @@ export abstract class ProjectService {
 
     private static async applyFocusFrames (project: Project, focusOptions: any, outPath: string) {
         // Create fake slices for the focus frames that only contain one frame
-        const focusSlices = focusOptions.frameTimestamps.map((timeStamp) => {
+        const focusSlices = focusOptions.frameTimestamps.map((timeStamp: number) => {
             return {
                 start: timeStamp,
                 end: timeStamp,
@@ -232,7 +234,7 @@ export abstract class ProjectService {
         })
 
         await sharp(sharpInputFrames.pop()?.input)
-            .composite(sharpInputFrames)
+            .composite(sharpInputFrames as OverlayOptions[])
             .toFile(outputPath)
     }
 

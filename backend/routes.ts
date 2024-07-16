@@ -3,7 +3,6 @@ import data from "../package.json"
 import {UploadService} from "./services/UploadService"
 import {getAllProjects, Slice} from "./Projects"
 import {ProjectService, projectInfoDTO } from "./services/ProjectService"
-import {BunFile} from "bun"
 
 /**
  * The routes of the backend.

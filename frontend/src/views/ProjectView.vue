@@ -2,7 +2,7 @@
 import {Carousel, type CarouselApi, CarouselContent, CarouselItem,} from '@/components/ui/carousel'
 import {Separator} from '@/components/ui/separator'
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select'
-import {capitalize, ref, type VNode, type VueElement, watch, watchEffect} from "vue"
+import {capitalize, ref, watch, watchEffect} from "vue"
 import {get, set, watchOnce} from "@vueuse/core"
 import {exposeProject, getProjectInfo} from "@/api"
 
@@ -125,7 +125,7 @@ function showActionButtonsForFrame(frameIndex: number) {
   set(hoveredImageIndex, frameIndex)
 }
 
-function hideActionButtonsForFrame(frameIndex: number) {
+function hideActionButtonsForFrame() {
   set(hoveredImageIndex, null)
 }
 

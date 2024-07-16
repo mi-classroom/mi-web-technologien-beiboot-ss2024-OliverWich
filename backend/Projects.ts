@@ -21,7 +21,7 @@ function getFileNameWithoutExtension(fileName: string) {
     return fileName.substring(0, fileName.lastIndexOf("."))
 }
 
-class Project {
+export class Project {
     name: string
     path: string
     framePath: string

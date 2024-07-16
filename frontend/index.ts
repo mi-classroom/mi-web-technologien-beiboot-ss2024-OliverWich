@@ -1,4 +1,4 @@
-import {Elysia, error} from "elysia"
+import {Elysia} from "elysia"
 import {staticPlugin} from "@elysiajs/static"
 
 /**
