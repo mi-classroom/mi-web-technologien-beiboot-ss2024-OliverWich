@@ -1,4 +1,4 @@
-import {access, mkdir, readdir} from "node:fs/promises"
+import {access, mkdir, readdir, rm} from "node:fs/promises"
 import {BunFile} from "bun"
 
 const projectsPath = `${import.meta.dir}/../projects`
@@ -76,6 +76,11 @@ export class Project {
         await newProject.calculateFrameCount()
 
         return newProject
+    }
+
+    async delete() {
+        console.info(`Deleting project ${this.name} in ${this.path}...`)
+        await rm(this.path, {recursive: true})
     }
 
     async calculateFrameCount() {

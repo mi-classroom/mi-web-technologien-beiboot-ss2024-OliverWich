@@ -1,5 +1,5 @@
 import {Context, Static, t} from "elysia"
-import {getProjectForName} from "../Projects"
+import {getAllProjects, getProjectForName} from "../Projects"
 
 import ffmpegPath from "ffmpeg-static"
 import { path as ffprobePath} from "ffprobe-static"
@@ -105,6 +105,27 @@ export abstract class ProjectService {
             duration: metaData.format.duration,
             frame_count: project.frameCount
         }
+    }
+
+    /**
+     * Deletes all project files without a trace.
+     *
+     * @param projectName
+     * @param response
+     */
+    static async deleteProject (projectName: string, response: Context["set"]) {
+        const projects = await getAllProjects()
+
+        if (!projects.includes(projectName)) {
+            response.status = 404
+            return `Could not find project "${projectName}"`
+        }
+
+        const project = await getProjectForName(projectName)
+        await project.delete()
+
+        response.status = 200
+        return `Deleted project "${projectName}"`
     }
 
     /**
