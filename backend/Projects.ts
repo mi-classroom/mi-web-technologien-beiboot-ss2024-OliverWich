@@ -27,6 +27,7 @@ export class Project {
     framePath: string
     frameFileType: string = "png"
     frameCount: number = 0
+    frameNames: Array<string> = []
     thumbnailPath: string
     outPath: string
     sourceFile: BunFile
@@ -71,13 +72,22 @@ export class Project {
         await createDirIfNotExists(`${newProject.thumbnailPath}`)
         await createDirIfNotExists(`${newProject.outPath}`)
 
+        await newProject.readFrameNames()
         await newProject.calculateFrameCount()
 
         return newProject
     }
 
     async calculateFrameCount() {
-        this.frameCount = (await readdir(this.framePath)).length
+        if  (!this.frameNames.length) {
+            await this.readFrameNames()
+        }
+
+        this.frameCount = this.frameNames.length
+    }
+
+    async readFrameNames() {
+        this.frameNames = await readdir(this.framePath)
     }
 
     async saveSourceFile(file: File) {
