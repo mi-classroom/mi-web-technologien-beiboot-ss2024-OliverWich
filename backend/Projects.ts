@@ -122,7 +122,7 @@ export class Project {
      * @param fps How many frames per second equivalent to return
      */
     async getFrames(slices: Array<Slice>, fps: number = this.fps): Promise<Array<BunFile>> {
-        const frameNames = await readdir(this.framePath)
+        const frameNames = this.frameNames
         const frameFiles: Array<BunFile> = []
 
         const frameInterval = Math.floor(this.fps / fps)
