@@ -237,6 +237,15 @@ const onSubmit = form.handleSubmit(async (values) => {
   set(buttonIcon, 'mdi:check')
   set(loading, false)
 })
+
+function downloadResult() {
+  const a = document.createElement('a')
+  a.href = outputImage.value
+  a.download = `${props.projectName}_exposed.png`
+
+  a.click()
+  a.remove()
+}
 </script>
 
 <template>
@@ -488,7 +497,13 @@ const onSubmit = form.handleSubmit(async (values) => {
 
     <template v-if="outputImage">
       <div class="mt-6">
-        <h2 class="mb-6 text-2xl font-bold">Output:</h2>
+        <span class="flex justify-between">
+          <h2 class="mb-6 text-2xl font-bold w-3">Output:</h2>
+          <Button @click="downloadResult" :disabled="loading">
+            <Icon icon="mdi:download" class="w-4 h-4 mr-2" />
+            Download Result
+          </Button>
+        </span>
         <img :src="outputImage" alt="Exposed project image" class="w-full"/>
       </div>
     </template>
