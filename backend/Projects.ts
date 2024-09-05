@@ -1,4 +1,5 @@
 import {access, mkdir, readdir, rm} from "node:fs/promises"
+import {readdirSync} from "node:fs"
 import {BunFile} from "bun"
 
 const projectsPath = `${import.meta.dir}/../projects`
@@ -26,12 +27,23 @@ export class Project {
     path: string
     framePath: string
     frameFileType: string = "png"
-    frameCount: number = 0
-    frameNames: Array<string> = []
     thumbnailPath: string
     outPath: string
     sourceFile: BunFile
     fps: number = 30
+
+    get frameCount() {
+        return this.frameNames.length
+    }
+
+    _frameNames: Array<string> = []
+    get frameNames() {
+        if (!this._frameNames.length) {
+            this._frameNames = readdirSync(this.framePath)
+        }
+
+        return this._frameNames
+    }
 
     private constructor(name: string, path: string, sourceFile: BunFile) {
         this.name = name
@@ -72,27 +84,12 @@ export class Project {
         await createDirIfNotExists(`${newProject.thumbnailPath}`)
         await createDirIfNotExists(`${newProject.outPath}`)
 
-        await newProject.readFrameNames()
-        await newProject.calculateFrameCount()
-
         return newProject
     }
 
     async delete() {
         console.info(`Deleting project ${this.name} in ${this.path}...`)
         await rm(this.path, {recursive: true})
-    }
-
-    async calculateFrameCount() {
-        if  (!this.frameNames.length) {
-            await this.readFrameNames()
-        }
-
-        this.frameCount = this.frameNames.length
-    }
-
-    async readFrameNames() {
-        this.frameNames = await readdir(this.framePath)
     }
 
     async saveSourceFile(file: File) {
