@@ -217,8 +217,8 @@ const onSubmit = form.handleSubmit(async (values) => {
   if (get(focusFrameIndexes).length > 0) {
     requestBody.focus = {
       opacity: values.focusOpacity,
-      mode: values.focusOverlayMode,
-      blend: values.focusBlendMode,
+      overlayMode: values.focusOverlayMode,
+      blendMode: values.focusBlendMode,
       frameTimestamps: get(focusFrameIndexes).map((index) => index / projectFPS),
     }
   }
