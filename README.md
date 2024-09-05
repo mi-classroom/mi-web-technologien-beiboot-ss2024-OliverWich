@@ -51,7 +51,7 @@ Für Hot-Reloads und Entwicklung kann das Projekt mit folgenden Befehlen gestart
 ```bash
 bun serve
 ```
-oder
+welches folgendes ausführen wird um in den beiden Workspaces `frontend` und `backend` jeweils das `dev` Skript zu starten:
 ```bash
 bun run --filter "*" dev
 ```
@@ -59,6 +59,36 @@ bun run --filter "*" dev
 Hierbei wird das Vue Frontend im Watch-Modus gebaut und das Backend mit Hot-Reloading gestartet damit Änderungen direkt sichtbar sind.
 
 Auch hier ist der Server unter http://localhost:3000 erreichbar.
+
+> **Hinweis:** Das Prozessmanagement von Bun auf Windows ist noch nicht besonders optimiert für solche lang lebenden hot-reload Prozesse, wenn die ``--filter`` workspace option genutzt wird.
+> Es kann also gerade beim Frontend zu memory leaks und orphaned Prozessen kommen, die auch dann nicht gestoppt werden, wenn der Hauptprozess beendet wurde.
+>
+> Check your taskmanager if your laptop takes of like a jet engine, you're wellcome :D
+
+#### Module einzeln starten
+Die Module können auch einzeln ohne Bun's workspace management gestartet werden.
+
+Das hilft ein wenig gegen die Memory Leaks und Orphaned Prozesse, die durch das hot-reload und watch Modus entstehen.
+
+##### Frontend
+Hot reloads und Entwicklung:
+```bash
+bun frontend:serve
+```
+
+##### Backend
+Hot reloads und Entwicklung:
+```bash
+bun backend:serve
+```
+
+Nur ausführen:
+```bash
+bun backend:start
+```
+
+> **Wichtig:** Damit das Frontend funktioniert, muss zuerst mit `bun frontend:build` das Frontend gebaut werden!
+
 
 ## Architektur
 > TODO

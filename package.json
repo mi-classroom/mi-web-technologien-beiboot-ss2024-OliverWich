@@ -8,6 +8,7 @@
     "backend:serve": "bun --watch backend/index.ts",
     "backend:start": "bun backend/index.ts",
     "frontend:build": "cd frontend && bun run build",
+    "frontend:serve": "cd frontend && bun run dev",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
