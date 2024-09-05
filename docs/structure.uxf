@@ -1,0 +1,73 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLPackage</id><coordinates><x>60</x><y>210</y><w>370</w><h>350</h></coordinates><panel_attributes>backend
+lt=.
+fg=#006400</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>530</x><y>210</y><w>380</w><h>350</h></coordinates><panel_attributes>frontend
+lt=.
+fg=blue
+group=group-0</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>560</x><y>360</y><w>140</w><h>60</h></coordinates><panel_attributes>SPA
+Runtime: Bun
+Bundler: Vite
+bg=green
+group=group-0</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>780</x><y>260</y><w>100</w><h>40</h></coordinates><panel_attributes>shadcn-vue
+group=group-0
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>780</x><y>330</y><w>100</w><h>40</h></coordinates><panel_attributes>iconify-vue
+group=group-0
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>780</x><y>400</y><w>100</w><h>40</h></coordinates><panel_attributes>tailwind
+group=group-0
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>780</x><y>470</y><w>100</w><h>40</h></coordinates><panel_attributes>typescript
+group=group-0
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>690</x><y>370</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+group=group-0
+
+
+    Uses</panel_attributes><additional_attributes>10;20;30;20</additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>340</y><w>90</w><h>70</h></coordinates><panel_attributes>
+group=group-0</panel_attributes><additional_attributes>10;50;70;10</additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>270</y><w>90</w><h>140</h></coordinates><panel_attributes>
+group=group-0</panel_attributes><additional_attributes>10;120;70;10</additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>380</y><w>90</w><h>60</h></coordinates><panel_attributes>
+group=group-0</panel_attributes><additional_attributes>10;10;70;40</additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>380</y><w>90</w><h>130</h></coordinates><panel_attributes>
+group=group-0</panel_attributes><additional_attributes>10;10;70;110</additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>260</x><y>370</y><w>140</w><h>40</h></coordinates><panel_attributes>Server
+Runtime: Bun
+bg=#e7f8fa
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>390</x><y>370</y><w>190</w><h>50</h></coordinates><panel_attributes>lt=-&gt;
+Call via HTTP
+at  /api</panel_attributes><additional_attributes>170;20;10;20</additional_attributes></element><element><id>UMLState</id><coordinates><x>280</x><y>260</y><w>100</w><h>40</h></coordinates><panel_attributes>Elysia.js
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>90</x><y>260</y><w>100</w><h>40</h></coordinates><panel_attributes>sharp
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>90</x><y>330</y><w>100</w><h>40</h></coordinates><panel_attributes>fluent-ffmpeg
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>580</x><y>260</y><w>100</w><h>40</h></coordinates><panel_attributes>Vue.js 3
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>670</x><y>270</y><w>70</w><h>140</h></coordinates><panel_attributes></panel_attributes><additional_attributes>50;120;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>370</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+
+
+Uses    </panel_attributes><additional_attributes>10;20;30;20</additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>270</y><w>70</w><h>140</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;120;50;10</additional_attributes></element><element><id>Relation</id><coordinates><x>180</x><y>270</y><w>80</w><h>140</h></coordinates><panel_attributes></panel_attributes><additional_attributes>60;120;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>180</x><y>340</y><w>80</w><h>70</h></coordinates><panel_attributes></panel_attributes><additional_attributes>60;50;10;10</additional_attributes></element><element><id>UMLState</id><coordinates><x>90</x><y>440</y><w>90</w><h>30</h></coordinates><panel_attributes>ffmpeg-static
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLState</id><coordinates><x>90</x><y>500</y><w>90</w><h>30</h></coordinates><panel_attributes>ffprobe-static
+bg=#cb0000</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>130</x><y>360</y><w>110</w><h>120</h></coordinates><panel_attributes>lt=&lt;-
+Provide         
+binaries        </panel_attributes><additional_attributes>10;10;10;50;70;50;70;100;50;100</additional_attributes></element><element><id>Relation</id><coordinates><x>170</x><y>450</y><w>50</w><h>90</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;70;30;70;30;10</additional_attributes></element><element><id>UMLHierarchy</id><coordinates><x>590</x><y>490</y><w>80</w><h>40</h></coordinates><panel_attributes>type=Package
+dist
+bg=#ffce47</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLHierarchy</id><coordinates><x>360</x><y>660</y><w>260</w><h>180</h></coordinates><panel_attributes>type=Package
+bg=#ffce47
+projectName
+	  frames (as .png)
+	  out (incl. thumbnail.webp)
+	  thumbs (as .webp)
+	  uploadedSourceFile.any
+group=group-8</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>620</x><y>410</y><w>60</w><h>100</h></coordinates><panel_attributes>lt=&lt;-
+Gets 
+build 
+into
+</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>330</x><y>400</y><w>280</w><h>140</h></coordinates><panel_attributes>lt=&lt;-
+                                    Serves files
+                                    at /</panel_attributes><additional_attributes>260;110;30;110;30;10</additional_attributes></element><element><id>Relation</id><coordinates><x>280</x><y>400</y><w>100</w><h>300</h></coordinates><panel_attributes>lt=&lt;-
+Manages
+project
+files
+
+
+
+
+
+
+</panel_attributes><additional_attributes>80;280;10;280;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>410</x><y>790</y><w>40</w><h>50</h></coordinates><panel_attributes>lw=0
+bg=#ffe7a5
+transparency=0
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>420</x><y>790</y><w>20</w><h>30</h></coordinates><panel_attributes>
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>330</x><y>610</y><w>320</w><h>260</h></coordinates><panel_attributes>projects
+lt=.
+fg=#d5793a</panel_attributes><additional_attributes></additional_attributes></element></diagram>

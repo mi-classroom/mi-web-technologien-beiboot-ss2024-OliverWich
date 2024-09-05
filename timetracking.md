@@ -57,3 +57,14 @@
 | 1.5h    | Aufräumen, Editor styles, Docker compose |
 | 1h      | Review Prozess und CONTRIBUTING.md       |
 | 0.25h   | Branch Regeln                            |
+// 2:45h
+
+## Issue 5/6: Eigenes Feature / Finetuning & Docs
+| Stunden | Beschreibung                                        |
+|---------|-----------------------------------------------------|
+| 3h      | Performance improvements & optimizations & refactor |
+| 1h      | Delete Project                                      |
+| 0.25h   | Download result                                     |
+| 0.25h   | Fix blend modes for focus frames                    |
+| 1.5h    | Docs & Structure Diagram                            |
+// 6h
