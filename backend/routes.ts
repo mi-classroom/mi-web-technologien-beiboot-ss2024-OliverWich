@@ -27,6 +27,15 @@ export const backend = new Elysia({ prefix: '/api' })
             500: t.String()
         }
     })
+    .delete('/project/:name', ({ params: { name }, set }) => {
+        return ProjectService.deleteProject(name, set)
+    }, {
+        response: {
+            200: t.String(),
+            404: t.String(),
+            500: t.String()
+        }
+    })
     .get('/project/:name/thumbnail', ({ params: { name }, set }) => {
         return ProjectService.getProjectThumbnail(name, set)
     })

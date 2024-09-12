@@ -51,7 +51,7 @@ Für Hot-Reloads und Entwicklung kann das Projekt mit folgenden Befehlen gestart
 ```bash
 bun serve
 ```
-oder
+welches folgendes ausführen wird um in den beiden Workspaces `frontend` und `backend` jeweils das `dev` Skript zu starten:
 ```bash
 bun run --filter "*" dev
 ```
@@ -60,27 +60,70 @@ Hierbei wird das Vue Frontend im Watch-Modus gebaut und das Backend mit Hot-Relo
 
 Auch hier ist der Server unter http://localhost:3000 erreichbar.
 
-## Architektur
-> TODO
+> **Hinweis:** Das Prozessmanagement von Bun auf Windows ist noch nicht besonders optimiert für solche lang lebenden hot-reload Prozesse, wenn die ``--filter`` workspace option genutzt wird.
+> Es kann also gerade beim Frontend zu memory leaks und orphaned Prozessen kommen, die auch dann nicht gestoppt werden, wenn der Hauptprozess beendet wurde.
+>
+> Check your taskmanager if your laptop takes of like a jet engine, you're wellcome :D
 
-- Frontend Vue, statisch gebaut und über den Root path des Servers ausgeliefert.
-- Backend Elysia, welches die API bereitstellt und die Business Logik abbildet. Die API ist unter `/api` erreichbar.
-  - *ffmpeg* als CLI Tool für das Zerlegen des Videos in Einzelbilder.
-  - *sharp* für das Bilder handling
-    - Der beste blend mode "mean" ist allerdings eine eigene implementierung eines weighted (an hand der opacity) pixel Wert mean
+#### Module einzeln starten
+Die Module können auch einzeln ohne Bun's workspace management gestartet werden.
+
+Das hilft ein wenig gegen die Memory Leaks und Orphaned Prozesse, die durch das hot-reload und watch Modus entstehen.
+
+##### Frontend
+Hot reloads und Entwicklung:
+```bash
+bun frontend:serve
+```
+
+##### Backend
+Hot reloads und Entwicklung:
+```bash
+bun backend:serve
+```
+
+Nur ausführen:
+```bash
+bun backend:start
+```
+
+> **Wichtig:** Damit das Frontend funktioniert, muss zuerst mit `bun frontend:build` das Frontend gebaut werden!
+
+
+## Struktur & Funktionsweise
+![Shows an overview of the module structure including a glimpse inside the dependency structure of the code.
+Includes the folder structure inside the "projects" folder, outlining how each project is stored.](docs/structure.png "Diagram of the structure")
+
+Dieses Bild zeigt die Struktur des Projekts und wie die Module miteinander interagieren.
+Grundsätzlich sind hier die wichtigsten _Ordner_ abgebildet.
+Der jeweilige Inhalt wird formlos skizziert, um einen Überblick über die Struktur zu geben.
+
+"Still-Moving" besteht aus zwei Hauptteilen bzw. Softwaremodulen:
+- **backend**: In diesem Ordner bzw. Paket befindet sich der Server welcher sowohl die Business Logik abbildet als auch das Frontend ausliefert.
+- **frontend**: Hier befindet sich der Code für das Vue Frontend. Auch die gebauten Dateien werden in diesem Ordner gespeichert.
+
+Die roten Elemente stellen die wichtigsten npm-Dependencies dar, die in den jeweiligen Modulen genutzt werden.
+
+Zudem liegt im Root des Projekts ein Ordner namens **projects**, in dem die erstellten Projekte gespeichert werden.
+Die Projekte werden in Unterordner abgelegt, dessen Struktur wird im Diagramm dargestellt.
+Die Unterordner enthalten folgende Dateien:
+- *frames*: Enthält die Einzelbilder im png-Format, die aus dem Video extrahiert wurden.
+- *out*: Enthält sowohl das `thumbnail.webp` des Projekts (der erste Frame des Videos) und das fertige Bild mit Langzeitbelichtungseffekt, als auch Dateien aus Zwischenschritten, wenn die "Focus Frames" Funktionalität genutzt wird.
+- *thumbs*: Enthält Thumbnails der Einzelbilder im webp-Format, die im Frontend als Preview genutzt werden.
+
+### Die Funktionsweise der Langzeitbelichtung
+Zum Zerlegen des Videos in Einzelbilder wird das CLI Tool *ffmpeg* genutzt.
+
+Die Einzelbilder werden dann mit *sharp*, einer Image Library, bearbeitet und zu einem Bild mit Langzeitbelichtungseffekt zusammengefügt.
+Die von *sharp* bereitgestellten Blend Modes reichen jedoch leider nicht aus, um den gewünschten Effekt zu erzielen (werden aber dennoch als Option zur Verfügung gestellt), daher wurde ein eigener "mean" Blend Mode implementiert.
+Dieser berechnet den Mittelwert der Pixelwerte der Einzelbilder und fügt sie so zusammen.
+Er respektiert dabei auch die Transparenz der Pixel für einen "weighted mean" sodass die "Focus Frames" mit variierender Stärke über das finale Bild gelegt werden können.
 
 ## About
-Zum Modul Web Technologien gibt es ein begleitendes Projekt. Im Rahmen dieses Projekts werden wir von Veranstaltung zu Veranstaltung ein Projekt sukzessive weiter entwickeln und uns im Rahmen der Veranstaltung den Fortschritt anschauen, Code Reviews machen und Entwicklungsschritte vorstellen und diskutieren.
+Zum Modul Web Technologien gibt es ein begleitendes Projekt.
 
-Als organisatorischen Rahmen für das Projekt nutzen wir GitHub Classroom. Inhaltlich befassen wir uns mit einer Client-Server Anwendung mit deren Hilfe [Bilder mit Langzeitbelichtung](https://de.wikipedia.org/wiki/Langzeitbelichtung) sehr einfach nachgestellt werden können.
+Inhaltlich ist geht es dort um eine Client-Server Anwendung, mit deren Hilfe [Bilder mit Langzeitbelichtung](https://de.wikipedia.org/wiki/Langzeitbelichtung) sehr einfach nachgestellt werden können.
 
-Warum ist das cool? Bilder mit Langzeitbelichtung sind gar nicht so einfach zu erstellen, vor allem, wenn man möglichst viel Kontrolle über das Endergebnis haben möchte. In unserem Ansatz, bildet ein Film den Ausgangspunkt. Diesen zerlegen wir in Einzelbilder und montieren die Einzelbilder mit verschiedenen Blendmodes zu einem Bild mit Langzeitbelichtungseffekt zusammen.
-
-Dokumentieren Sie in diesem Beibootprojekt Ihre Entscheidungen gewissenhaft unter Zuhilfenahme von [Architectual Decision Records](https://adr.github.io) (ADR).
-
-Hier ein paar ADR Beispiele aus dem letzten Semestern:
-- https://github.com/mi-classroom/mi-web-technologien-beiboot-ss2022-Moosgloeckchen/tree/main/docs/decisions
-- https://github.com/mi-classroom/mi-web-technologien-beiboot-ss2022-mweiershaeuser/tree/main/adr
-- https://github.com/mi-classroom/mi-web-technologien-beiboot-ss2022-twobiers/tree/main/adr
-
-Halten Sie die Anwendung, gerade in der Anfangsphase möglichst einfach, schlank und leichtgewichtig (KISS).
+Warum ist das cool? Bilder mit Langzeitbelichtung sind gar nicht so einfach zu erstellen, vor allem, wenn man möglichst viel Kontrolle über das Endergebnis haben möchte.
+In unserem Ansatz bildet ein Film den Ausgangspunkt.
+Diesen zerlegen wir in Einzelbilder und montieren die Einzelbilder mit verschiedenen Blendmodes zu einem Bild mit Langzeitbelichtungseffekt zusammen.

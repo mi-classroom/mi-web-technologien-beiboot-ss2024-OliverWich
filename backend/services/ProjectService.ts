@@ -1,17 +1,12 @@
 import {Context, Static, t} from "elysia"
-import {getProjectForName} from "../Projects"
+import {getAllProjects, getProjectForName} from "../Projects"
 
-import ffmpegPath from "ffmpeg-static"
-import { path as ffprobePath} from "ffprobe-static"
-import ffmpeg, {FfprobeData} from "fluent-ffmpeg"
 import {access} from "node:fs/promises"
 import sharp, {OverlayOptions} from "sharp"
 import {BunFile} from "bun"
 
 import type {Project} from "../Projects"
-
-ffmpeg.setFfmpegPath(<string>ffmpegPath)
-ffmpeg.setFfprobePath(ffprobePath)
+import {runFfmpeg, runFfprobe} from "../ffHelpers"
 
 
 export abstract class ProjectService {
@@ -26,28 +21,9 @@ export abstract class ProjectService {
         }
 
         // Extract frames from the video
-        await this.runFfmpeg(project.sourceFile.name, project.fps, project.framePath, options?.resolution, project.frameFileType)
+        await runFfmpeg(project.sourceFile.name, project.fps, project.framePath, options?.resolution, project.frameFileType)
 
         response.status = 204
-    }
-
-    private static async runFfmpeg (targetFilePath: string, fps: number, targetFolder: string, resolution: number = 720, frameFileType = 'png'): Promise<void> {
-        return new Promise((resolve, reject) => {
-            try {
-                console.info(`Starting to extract frames from ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
-
-                ffmpeg(targetFilePath)
-                    .outputOptions('-vf',`scale=-2:${resolution}`)
-                    .fps(fps)
-                    .saveToFile(`${targetFolder}/%3d.${frameFileType}`)
-                    .on('end', function() {
-                        console.info(`Finished processing file ${targetFilePath} to ${targetFolder} with ${fps} fps and resolution ${resolution}.`)
-                        resolve()
-                    })
-            } catch (error) {
-                reject(error)
-            }
-        })
     }
 
     static async expose (projectName: string, options: any, _response: Context["set"]) {
@@ -82,7 +58,7 @@ export abstract class ProjectService {
             return errorString
         }
 
-        const metaData = await this.runFfprobe(projectFileName)
+        const metaData = await runFfprobe(projectFileName)
 
         if (!metaData || !metaData.format) {
             const errorString = `Could not get meta data for project "${projectName}"`
@@ -105,6 +81,27 @@ export abstract class ProjectService {
             duration: metaData.format.duration,
             frame_count: project.frameCount
         }
+    }
+
+    /**
+     * Deletes all project files without a trace.
+     *
+     * @param projectName
+     * @param response
+     */
+    static async deleteProject (projectName: string, response: Context["set"]) {
+        const projects = await getAllProjects()
+
+        if (!projects.includes(projectName)) {
+            response.status = 404
+            return `Could not find project "${projectName}"`
+        }
+
+        const project = await getProjectForName(projectName)
+        await project.delete()
+
+        response.status = 200
+        return `Deleted project "${projectName}"`
     }
 
     /**
@@ -170,18 +167,6 @@ export abstract class ProjectService {
 
         response.status = 200
         return Bun.file(thumbnailPath)
-    }
-
-    private static async runFfprobe(fileName: string): Promise<FfprobeData> {
-        return new Promise((resolve, reject) => {
-            ffmpeg.ffprobe(fileName, (err, metadata) => {
-                if (err) {
-                    reject(err)
-                }
-
-                resolve(metadata)
-            })
-        })
     }
 
     private static async applyFocusFrames (project: Project, focusOptions: any, outPath: string) {

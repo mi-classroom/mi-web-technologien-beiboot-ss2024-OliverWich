@@ -52,8 +52,16 @@ export function apiPOST(url: string, body: any, formData: boolean = false) {
     return apiCall(url, 'POST', body, formData)
 }
 
+export function apiDELETE(url: string) {
+    return apiCall(url, 'DELETE')
+}
+
 export function createProject(projectFile: File) {
     return apiPOST('/upload', {'file' : projectFile}, true)
+}
+
+export function deleteProject(projectName: string) {
+    return apiDELETE(`/project/${projectName}`)
 }
 
 export function processProject(projectName: string) {
