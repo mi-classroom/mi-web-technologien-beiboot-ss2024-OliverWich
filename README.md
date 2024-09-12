@@ -40,6 +40,11 @@ Um das Projekt nativ auszuführen, muss [Bun](https://bun.sh/) installiert sein.
 bun install
 ```
 
+> **Hinweis:** Mit Bun 1.1.27 (der aktuellen Version at the time of writing) _kann_ es zu einem Installationsfehler kommen.
+> In der vorheringen Version 1.1.26 funktioniert die Installation jedoch einwandfrei.
+> Wie spezifische Versionen installiert werden können wird [hier](https://bun.sh/docs/installation#installing-older-versions-of-bun) beschrieben.
+
+
 #### Ausführung
 ```bash
 bun start
