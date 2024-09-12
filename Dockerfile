@@ -1,4 +1,4 @@
-FROM oven/bun as frontend-build
+FROM oven/bun:1.1.26 as frontend-build
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY tsconfig.json .
 
 RUN bun frontend:build
 
-FROM oven/bun as final
+FROM oven/bun:1.1.26 as final
 
 WORKDIR /app
 
